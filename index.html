@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<title>KisanCool — Smart Agricultural Dashboard</title>
+<title>AgroVault — Smart Agricultural Dashboard</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 :root{
@@ -36,11 +36,11 @@ nav{
 }
 .nav-left{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
 .logo{
-  width:32px;height:32px;border-radius:10px;flex-shrink:0;
-  background:linear-gradient(135deg,#059669,#2563eb);
+  width:32px;height:32px;border-radius:8px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
-  color:#fff;font-size:16px;box-shadow:0 2px 6px rgba(37,99,235,.2);
+  overflow:hidden;
 }
+.logo img{width:100%;height:100%;object-fit:contain}
 .brand h1{font-size:16px;font-weight:900;letter-spacing:-.3px;line-height:1}
 .brand .tagline{display:none}
 .nav-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
@@ -62,7 +62,7 @@ nav{
 .lang-toggle span.active{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.1)}
 @media(min-width:600px){
   nav{padding:10px 20px;height:56px}
-  .logo{width:38px;height:38px;font-size:18px}
+  .logo{width:38px;height:38px}
   .brand h1{font-size:18px}
   .brand .tagline{display:block;font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
   .nav-meta{font-size:12px;padding:5px 10px}
@@ -115,15 +115,18 @@ input[type=range]{width:100%;accent-color:var(--accent);height:6px}
 /* ── Multi-select Crop Chips ── */
 .crop-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
 .crop-chip{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:10px 14px;border-radius:999px;font-size:14px;font-weight:700;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 14px 8px 8px;border-radius:999px;font-size:14px;font-weight:700;
   border:2px solid var(--border);background:#fff;
   cursor:pointer;user-select:none;transition:all .2s;
   -webkit-tap-highlight-color:transparent;
 }
 .crop-chip:active{transform:scale(.96)}
 .crop-chip.selected{background:var(--accentBg);border-color:var(--accent);color:var(--accent)}
-.crop-chip .chip-emoji{font-size:18px}
+.crop-chip .chip-img{
+  width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;
+  border:2px solid rgba(0,0,0,.06);background:#f3f4f6;
+}
 .crop-chip .chip-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;transition:all .2s;flex-shrink:0}
 .crop-chip.selected .chip-check{background:var(--accent);border-color:var(--accent)}
 
@@ -259,9 +262,9 @@ input[type=range]{width:100%;accent-color:var(--accent);height:6px}
 <!-- ── Top Navigation ── -->
 <nav>
   <div class="nav-left">
-    <div class="logo">🌱</div>
+    <div class="logo"><img src="logo.svg" alt="AgroVault"></div>
     <div class="brand">
-      <h1 id="navTitle">KisanCool</h1>
+      <h1 id="navTitle">AgroVault</h1>
       <div class="tagline" id="navTagline">Smart Agricultural Cold Storage</div>
     </div>
   </div>
@@ -377,7 +380,7 @@ function rnd(n){return(Math.random()*2-1)*n}
 /* ════════════ i18n ════════════ */
 const L={
 en:{
-  navTitle:"KisanCool",tagline:"Smart Agricultural Cold Storage",connected:"Connected",
+  navTitle:"AgroVault",tagline:"Smart Agricultural Cold Storage",connected:"Connected",
   temp:"Temperature",hum:"Humidity",bat:"Battery",comp:"Compressor",
   normal:"Normal",good:"Good",low:"Low",critical:"Critical",high:"High",
   auto:"Auto",on:"ON",off:"OFF",tgt:"Target",solar:"Solar",
@@ -446,10 +449,10 @@ en:{
     {e:"🌿",t:"Organic Pest Control",d:"Neem oil for common pests. Companion planting — marigolds repel aphids naturally."},
     {e:"🔄",t:"Crop Rotation",d:"Rotate every season. Follow heavy feeders with light feeders, then legumes to fix nitrogen."},
   ],
-  footer:"KisanCool — Solar-Powered Smart Cold Storage · SDG 2, 7, 12, 13 · Hult Prize 2026",
+  footer:"AgroVault — Solar-Powered Smart Cold Storage · SDG 2, 7, 12, 13 · Hult Prize 2026",
 },
 ne:{
-  navTitle:"किसानकूल",tagline:"स्मार्ट कृषि कोल्ड स्टोरेज",connected:"जडान भयो",
+  navTitle:"AgroVault",tagline:"स्मार्ट कृषि कोल्ड स्टोरेज",connected:"जडान भयो",
   temp:"तापक्रम",hum:"आर्द्रता",bat:"ब्याट्री",comp:"कम्प्रेसर",
   normal:"सामान्य",good:"राम्रो",low:"कम",critical:"गम्भीर",high:"उच्च",
   auto:"स्वचालित",on:"चालु",off:"बन्द",tgt:"लक्ष्य",solar:"सोलार",
@@ -518,13 +521,20 @@ ne:{
     {e:"🌿",t:"जैविक कीट नियन्त्रण",d:"नीम तेल प्रयोग गर्नुहोस्। साथी रोपाइ — सयपत्रीले माहुरो भगाउँछ।"},
     {e:"🔄",t:"बाली चक्र",d:"हरेक मौसम बाली परिवर्तन गर्नुहोस्। भारी फिडर पछि हल्का फिडर, त्यसपछि दालहरू।"},
   ],
-  footer:"किसानकूल — सोलार स्मार्ट कोल्ड स्टोरेज · SDG 2, 7, 12, 13 · Hult Prize 2026",
+  footer:"AgroVault — सोलार स्मार्ट कोल्ड स्टोरेज · SDG 2, 7, 12, 13 · Hult Prize 2026",
 }};
 
 let lang="ne";
 function t(){return L[lang]}
 
 /* ════════════ Crop Profiles ════════════ */
+const CROP_IMGS={
+  TOMATO:"https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=80&h=80&fit=crop&crop=center&q=80",
+  ONION:"https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=80&h=80&fit=crop&crop=center&q=80",
+  POTATO:"https://images.unsplash.com/photo-1518977676601-b53f82abe5e7?w=80&h=80&fit=crop&crop=center&q=80",
+  LEAFY_GREENS:"https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=80&h=80&fit=crop&crop=center&q=80",
+  CARROT:"https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=80&h=80&fit=crop&crop=center&q=80",
+};
 const CROPS={
   TOMATO:      {tMin:10,tMax:13, hMin:85,hMax:95, emoji:"🍅"},
   ONION:       {tMin:2, tMax:8,  hMin:65,hMax:75, emoji:"🧅"},
@@ -591,7 +601,8 @@ function renderCropChips(){
     const sel=S.selectedCrops.includes(key);
     h+=`<div class="crop-chip${sel?" selected":""}" data-crop="${key}">
       <span class="chip-check">${sel?"✓":""}</span>
-      <span class="chip-emoji">${CROPS[key].emoji}</span>
+      <img class="chip-img" src="${CROP_IMGS[key]}" alt="${t()[key]}" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+      <span style="display:none;font-size:18px">${CROPS[key].emoji}</span>
       <span class="chip-name">${t()[key]}</span>
     </div>`;
   }
