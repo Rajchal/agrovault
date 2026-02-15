@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
 <title>KisanCool — Smart Agricultural Dashboard</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -18,185 +20,259 @@
   --radius:16px;
   --sans:'Inter',system-ui,-apple-system,sans-serif;
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --bottomNav:68px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
-::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px}
+html{overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;padding-bottom:calc(var(--bottomNav) + 16px)}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px}
 
+/* ── Top Nav ── */
 nav{
-  background:rgba(255,255,255,.95);border-bottom:1px solid var(--border);
-  padding:16px 28px;display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);flex-wrap:wrap;gap:12px;
+  background:rgba(255,255,255,.96);border-bottom:1px solid var(--border);
+  padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);gap:8px;
 }
-.nav-left{display:flex;align-items:center;gap:14px}
+.nav-left{display:flex;align-items:center;gap:10px;min-width:0}
 .logo{
-  width:46px;height:46px;border-radius:14px;
+  width:40px;height:40px;border-radius:12px;flex-shrink:0;
   background:linear-gradient(135deg,#059669,#2563eb);
   display:flex;align-items:center;justify-content:center;
-  color:#fff;font-size:24px;box-shadow:0 2px 8px rgba(37,99,235,.25);
+  color:#fff;font-size:20px;box-shadow:0 2px 8px rgba(37,99,235,.25);
 }
-.brand h1{font-size:22px;font-weight:900;letter-spacing:-.3px;line-height:1.2}
-.brand .tagline{font-size:14px;color:var(--muted);font-weight:500}
-.nav-right{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand h1{font-size:20px;font-weight:900;letter-spacing:-.3px;line-height:1.1}
+.brand .tagline{font-size:12px;color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+.nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .nav-meta{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 14px;background:#f8fafc;border:1px solid var(--border);border-radius:999px;
-  font-size:14px;color:var(--muted);font-weight:600;
+  display:flex;align-items:center;gap:6px;
+  padding:6px 10px;background:#f8fafc;border:1px solid var(--border);border-radius:999px;
+  font-size:12px;color:var(--muted);font-weight:600;
 }
-.status-dot{width:10px;height:10px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px rgba(5,150,105,.2);animation:pulse 2s infinite}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px rgba(5,150,105,.2);animation:pulse 2s infinite;flex-shrink:0}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(5,150,105,.2)}50%{box-shadow:0 0 0 6px rgba(5,150,105,.1)}}
 .lang-toggle{
   display:flex;background:#f1f5f9;border:1px solid var(--border);border-radius:999px;
-  padding:4px;cursor:pointer;user-select:none;
+  padding:3px;cursor:pointer;user-select:none;flex-shrink:0;
 }
 .lang-toggle span{
-  padding:6px 16px;border-radius:999px;font-size:14px;font-weight:700;
+  padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700;
   transition:all .25s;color:var(--muted);
 }
 .lang-toggle span.active{background:#fff;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.1)}
 
-main{max-width:1280px;margin:0 auto;padding:24px 28px 60px}
+/* ── Main Content ── */
+main{max-width:640px;margin:0 auto;padding:12px 12px 20px}
+@media(min-width:768px){main{max-width:800px;padding:20px 24px 40px}}
 
-.section-header{display:flex;align-items:center;gap:10px;margin:32px 0 16px}
-.section-header:first-child{margin-top:0}
-.section-header h2{font-size:22px;font-weight:900;letter-spacing:-.3px}
-.section-badge{padding:4px 14px;border-radius:999px;font-size:13px;font-weight:700;background:var(--accentBg);color:var(--accent);border:1px solid var(--accentBd)}
+/* ── Page Sections (tabs) ── */
+.page{display:none}
+.page.active{display:block}
 
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:8px}
-@media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:500px){.kpi-row{grid-template-columns:1fr}}
-.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);transition:box-shadow .2s}
-.kpi:hover{box-shadow:var(--shadowLg)}
-.kpi .label{font-size:15px;color:var(--muted);margin-bottom:6px;font-weight:600;display:flex;align-items:center;gap:8px}
-.kpi .emoji{font-size:22px}
-.kpi .value{font-size:38px;font-weight:900;letter-spacing:-1px;line-height:1.1}
-.kpi .sub{font-size:14px;color:var(--muted);margin-top:8px;font-weight:500}
-.tag{display:inline-flex;padding:4px 14px;border-radius:999px;font-size:13px;font-weight:700;margin-top:8px}
+.section-header{display:flex;align-items:center;gap:8px;margin:20px 0 12px;flex-wrap:wrap}
+.section-header:first-child{margin-top:4px}
+.section-header h2{font-size:19px;font-weight:900;letter-spacing:-.3px}
+.section-badge{padding:3px 12px;border-radius:999px;font-size:12px;font-weight:700;background:var(--accentBg);color:var(--accent);border:1px solid var(--accentBd)}
+
+/* ── KPIs ── */
+.kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);transition:box-shadow .2s}
+.kpi .label{font-size:13px;color:var(--muted);margin-bottom:4px;font-weight:600;display:flex;align-items:center;gap:6px}
+.kpi .emoji{font-size:18px}
+.kpi .value{font-size:32px;font-weight:900;letter-spacing:-1px;line-height:1.1}
+@media(min-width:400px){.kpi .value{font-size:36px}}
+.kpi .sub{font-size:12px;color:var(--muted);margin-top:6px;font-weight:500}
+.tag{display:inline-flex;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;margin-top:6px}
 .tag.ok{background:var(--goodBg);color:var(--good);border:1px solid var(--goodBd)}
 .tag.warning{background:var(--warnBg);color:var(--warn);border:1px solid var(--warnBd)}
 .tag.danger{background:var(--badBg);color:var(--bad);border:1px solid var(--badBd)}
+.tag.info{background:var(--accentBg);color:var(--accent);border:1px solid var(--accentBd)}
 
-.grid-2{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.grid-2-equal{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media(max-width:900px){.grid-2,.grid-3,.grid-2-equal{grid-template-columns:1fr}}
+/* ── Cards ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px}
+.card-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-head h3{font-size:16px;font-weight:800;display:flex;align-items:center;gap:6px}
+.card-body{padding:16px}
+canvas{width:100%;height:200px;display:block}
 
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:box-shadow .2s}
-.card:hover{box-shadow:var(--shadowLg)}
-.card-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
-.card-head h3{font-size:17px;font-weight:800;display:flex;align-items:center;gap:8px}
-.card-body{padding:22px}
-
-canvas{width:100%;height:240px;display:block}
-
-.field-group{display:flex;flex-direction:column;gap:12px}
-.field{background:#f8fafc;border:1px solid var(--border);border-radius:14px;padding:16px}
-.field label{font-size:14px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-weight:600}
-.field .fv{font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:700}
-select{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--text);font-size:15px;font-weight:600;outline:none;font-family:var(--sans);cursor:pointer}
+/* ── Controls ── */
+.field-group{display:flex;flex-direction:column;gap:10px}
+.field{background:#f8fafc;border:1px solid var(--border);border-radius:14px;padding:14px}
+.field label{font-size:13px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font-weight:600}
+.field .fv{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:700}
+select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--text);font-size:15px;font-weight:600;outline:none;font-family:var(--sans);cursor:pointer;-webkit-appearance:none}
 select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
-input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent);height:6px}
 
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:16px;background:#f8fafc;border:1px solid var(--border);border-radius:14px}
-.toggle-info .t{font-size:15px;font-weight:700}
-.toggle-info .d{font-size:14px;color:var(--muted);font-weight:500}
-.sw{width:52px;height:28px;border-radius:999px;background:#d1d5db;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0}
-.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .25s;box-shadow:0 2px 6px rgba(0,0,0,.2)}
-.sw.on{background:var(--good)}.sw.on::after{transform:translateX(24px)}
+/* ── Multi-select Crop Chips ── */
+.crop-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.crop-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:10px 14px;border-radius:999px;font-size:14px;font-weight:700;
+  border:2px solid var(--border);background:#fff;
+  cursor:pointer;user-select:none;transition:all .2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.crop-chip:active{transform:scale(.96)}
+.crop-chip.selected{background:var(--accentBg);border-color:var(--accent);color:var(--accent)}
+.crop-chip .chip-emoji{font-size:18px}
+.crop-chip .chip-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;transition:all .2s;flex-shrink:0}
+.crop-chip.selected .chip-check{background:var(--accent);border-color:var(--accent)}
 
-.alert-item{padding:14px 16px;border-radius:14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;font-size:14px}
+/* ── Compromise Warning ── */
+.compromise-banner{
+  padding:12px 14px;border-radius:12px;margin-top:10px;
+  font-size:13px;font-weight:600;line-height:1.5;
+  display:flex;align-items:flex-start;gap:8px;
+}
+.compromise-banner.ideal{background:var(--goodBg);border:1px solid var(--goodBd);color:#065f46}
+.compromise-banner.compromised{background:var(--warnBg);border:1px solid var(--warnBd);color:#92400e}
+.compromise-banner .cb-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+
+/* ── Toggle / Switch ── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px;background:#f8fafc;border:1px solid var(--border);border-radius:14px}
+.toggle-info .t{font-size:14px;font-weight:700}
+.toggle-info .d{font-size:13px;color:var(--muted);font-weight:500}
+.sw{width:48px;height:26px;border-radius:999px;background:#d1d5db;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .25s;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.sw.on{background:var(--good)}.sw.on::after{transform:translateX(22px)}
+
+/* ── Alerts ── */
+.alert-item{padding:12px 14px;border-radius:14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;font-size:13px}
 .alert-item.ok{background:var(--goodBg);border:1px solid var(--goodBd)}
 .alert-item.warning{background:var(--warnBg);border:1px solid var(--warnBd)}
 .alert-item.danger{background:var(--badBg);border:1px solid var(--badBd)}
-.alert-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex-shrink:0}
+.alert-icon{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0}
 .alert-item.ok .alert-icon{background:#d1fae5;color:var(--good)}
 .alert-item.warning .alert-icon{background:#fef3c7;color:var(--warn)}
 .alert-item.danger .alert-icon{background:#fee2e2;color:var(--bad)}
-.alert-text .ah{font-weight:700;font-size:15px}
-.alert-text .ad{color:var(--muted);margin-top:3px;font-size:14px;line-height:1.5}
+.alert-text .ah{font-weight:700;font-size:14px}
+.alert-text .ad{color:var(--muted);margin-top:2px;font-size:13px;line-height:1.5}
 
-.wx-main{font-size:30px;font-weight:900;letter-spacing:-.5px}
-.wx-detail{font-size:15px;color:var(--muted);margin-top:6px;font-weight:500}
-.wx-advice{margin-top:14px;padding:14px 16px;background:var(--accentBg);border:1px solid var(--accentBd);border-radius:14px;font-size:15px;color:#1e40af;font-weight:500;line-height:1.6}
+/* ── Weather ── */
+.wx-main{font-size:26px;font-weight:900;letter-spacing:-.5px}
+.wx-detail{font-size:14px;color:var(--muted);margin-top:4px;font-weight:500}
+.wx-advice{margin-top:12px;padding:12px 14px;background:var(--accentBg);border:1px solid var(--accentBd);border-radius:14px;font-size:14px;color:#1e40af;font-weight:500;line-height:1.5}
+.forecast-strip{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
+.forecast-day{text-align:center;padding:12px 8px;border-radius:14px;background:#f8fafc;border:1px solid var(--border);min-width:65px;flex-shrink:0;scroll-snap-align:start}
+.forecast-day .fd-icon{font-size:24px}
+.forecast-day .fd-temp{font-size:15px;font-weight:800;margin-top:2px}
+.forecast-day .fd-label{font-size:11px;color:var(--muted);font-weight:600}
 
-.forecast-day{text-align:center;padding:14px 10px;border-radius:14px;background:#f8fafc;border:1px solid var(--border);min-width:70px;flex:1}
-.forecast-day .fd-icon{font-size:28px}
-.forecast-day .fd-temp{font-size:16px;font-weight:800;margin-top:4px}
-.forecast-day .fd-label{font-size:12px;color:var(--muted);font-weight:600}
-
-.shelf-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+/* ── Shelf Life ── */
+.shelf-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
 .shelf-item:last-child{border-bottom:none}
-.shelf-name{font-weight:700;font-size:16px}
-.shelf-days{font-size:14px;color:var(--muted);font-weight:600;white-space:nowrap}
-.shelf-bar{width:120px;height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;flex-shrink:0}
+.shelf-name{font-weight:700;font-size:15px}
+.shelf-days{font-size:13px;color:var(--muted);font-weight:600;white-space:nowrap}
+.shelf-bar{width:100px;height:7px;background:#e5e7eb;border-radius:999px;overflow:hidden;flex-shrink:0}
 .shelf-bar .fill{height:100%;border-radius:999px;transition:width .5s}
 
-.info-card{padding:22px;border-radius:16px;border:1px solid var(--border);background:#f8fafc;transition:background .2s,box-shadow .2s}
-.info-card:hover{background:#fff;box-shadow:var(--shadowLg)}
-.info-card .ic-emoji{font-size:36px;margin-bottom:10px}
-.info-card .ic-title{font-size:18px;font-weight:800;margin-bottom:6px}
-.info-card .ic-desc{font-size:15px;color:var(--muted);line-height:1.6;font-weight:500}
-.ic-list{list-style:none;padding:0;margin-top:12px}
-.ic-list li{padding:7px 0;border-bottom:1px solid var(--border);font-size:15px;font-weight:500;display:flex;align-items:flex-start;gap:8px}
+/* ── Grid Layouts for Info Page ── */
+.info-grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:600px){.info-grid-2{grid-template-columns:1fr 1fr}}
+
+.info-card{padding:18px;border-radius:16px;border:1px solid var(--border);background:#f8fafc;transition:background .2s}
+.info-card:active{background:#fff}
+.info-card .ic-emoji{font-size:32px;margin-bottom:8px}
+.info-card .ic-title{font-size:16px;font-weight:800;margin-bottom:4px}
+.info-card .ic-desc{font-size:14px;color:var(--muted);line-height:1.5;font-weight:500}
+.ic-list{list-style:none;padding:0;margin-top:10px}
+.ic-list li{padding:6px 0;border-bottom:1px solid var(--border);font-size:14px;font-weight:500;display:flex;align-items:flex-start;gap:6px}
 .ic-list li:last-child{border-bottom:none}
 .ic-list li::before{content:"→";color:var(--accent);font-weight:700;flex-shrink:0}
 
-.price-table{width:100%;border-collapse:collapse}
-.price-table th{text-align:left;padding:14px;font-size:14px;font-weight:700;color:var(--muted);border-bottom:2px solid var(--border);text-transform:uppercase;letter-spacing:.5px}
-.price-table td{padding:16px 14px;font-size:16px;font-weight:600;border-bottom:1px solid var(--border)}
-.price-table tr:last-child td{border-bottom:none}
+/* ── Market Prices ── */
+.price-card{padding:14px;border-radius:14px;border:1px solid var(--border);background:#fff;display:flex;align-items:center;gap:12px}
+.price-card .pc-emoji{font-size:28px;flex-shrink:0}
+.price-card .pc-info{flex:1;min-width:0}
+.price-card .pc-name{font-size:15px;font-weight:800}
+.price-card .pc-price{font-size:14px;color:var(--muted);font-weight:600}
+.price-card .pc-right{text-align:right;flex-shrink:0}
+.price-card .pc-change{font-size:15px;font-weight:800}
+.price-card .pc-advice{font-size:11px;color:var(--muted);font-weight:500;max-width:120px}
 .trend-up{color:var(--good)}.trend-down{color:var(--bad)}.trend-flat{color:var(--warn)}
 
-.season-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-@media(max-width:700px){.season-grid{grid-template-columns:repeat(2,1fr)}}
-.season-item{padding:16px;border-radius:14px;text-align:center;border:1px solid var(--border)}
-.season-item .s-emoji{font-size:32px;display:block;margin-bottom:6px}
-.season-item .s-name{font-size:16px;font-weight:800}
-.season-item .s-months{font-size:13px;color:var(--muted);font-weight:500;margin-top:4px}
+/* ── Season Calendar ── */
+.season-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:500px){.season-grid{grid-template-columns:repeat(4,1fr)}}
+.season-item{padding:14px;border-radius:14px;text-align:center;border:1px solid var(--border)}
+.season-item .s-emoji{font-size:28px;display:block;margin-bottom:4px}
+.season-item .s-name{font-size:14px;font-weight:800}
+.season-item .s-months{font-size:12px;color:var(--muted);font-weight:500;margin-top:2px}
 .season-item.in-season{background:var(--goodBg);border-color:var(--goodBd)}
 .season-item.off-season{background:#f8fafc}
 
-.disease-card{padding:20px;border-radius:16px;border:1px solid var(--border);background:#fff}
-.disease-card .d-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
-.disease-card .d-name{font-size:18px;font-weight:800}
-.disease-card .d-crop{font-size:14px;color:var(--muted);font-weight:600}
-.d-risk{padding:4px 12px;border-radius:999px;font-size:12px;font-weight:700}
+/* ── Disease Cards ── */
+.disease-card{padding:16px;border-radius:16px;border:1px solid var(--border);background:#fff}
+.disease-card .d-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.disease-card .d-name{font-size:16px;font-weight:800}
+.disease-card .d-crop{font-size:13px;color:var(--muted);font-weight:600}
+.d-risk{padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
 .d-risk.high{background:var(--badBg);color:var(--bad);border:1px solid var(--badBd)}
 .d-risk.medium{background:var(--warnBg);color:var(--warn);border:1px solid var(--warnBd)}
 .d-risk.low{background:var(--goodBg);color:var(--good);border:1px solid var(--goodBd)}
-.disease-card .d-body{font-size:15px;color:var(--muted);line-height:1.6;font-weight:500;margin-bottom:12px}
-.disease-card .d-action{padding:14px;border-radius:12px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:14px;color:#065f46;font-weight:600;line-height:1.5}
+.disease-card .d-body{font-size:14px;color:var(--muted);line-height:1.5;font-weight:500;margin-bottom:10px}
+.disease-card .d-action{padding:12px;border-radius:12px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:13px;color:#065f46;font-weight:600;line-height:1.5}
 
-.empty-note{font-size:15px;color:var(--muted);padding:12px 0;font-weight:500}
-footer{text-align:center;padding:28px;font-size:14px;color:var(--muted);font-weight:500;border-top:1px solid var(--border);margin-top:40px}
+.empty-note{font-size:14px;color:var(--muted);padding:10px 0;font-weight:500}
+
+/* ── Bottom Tab Nav ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  height:var(--bottomNav);
+  background:rgba(255,255,255,.97);
+  border-top:1px solid var(--border);
+  backdrop-filter:blur(14px);
+  display:flex;align-items:stretch;justify-content:space-around;
+  z-index:200;
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+.bottom-nav .tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;user-select:none;color:var(--muted);
+  font-size:11px;font-weight:600;transition:color .2s;
+  -webkit-tap-highlight-color:transparent;position:relative;
+}
+.bottom-nav .tab.active{color:var(--accent)}
+.bottom-nav .tab.active::before{
+  content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:32px;height:3px;background:var(--accent);border-radius:0 0 4px 4px;
+}
+.bottom-nav .tab-icon{font-size:22px;line-height:1}
+.bottom-nav .tab-label{white-space:nowrap}
+
+/* ── Utility ── */
+.mt-12{margin-top:12px}
+.mb-8{margin-bottom:8px}
 </style>
 </head>
 <body>
 
+<!-- ── Top Navigation ── -->
 <nav>
   <div class="nav-left">
     <div class="logo">🌱</div>
     <div class="brand">
       <h1 id="navTitle">KisanCool</h1>
-      <div class="tagline" id="navTagline">Smart Agricultural Cold Storage System</div>
+      <div class="tagline" id="navTagline">Smart Agricultural Cold Storage</div>
     </div>
   </div>
   <div class="nav-right">
     <div class="lang-toggle" id="langToggle">
-      <span class="active" data-lang="en">English</span>
-      <span data-lang="ne">नेपाली</span>
+      <span class="active" data-lang="en">EN</span>
+      <span data-lang="ne">ने</span>
     </div>
     <div class="nav-meta">
       <span class="status-dot"></span>
-      <span id="statusLabel">Connected</span>
-      <span style="color:#d1d5db">•</span>
       <span id="clockLabel"></span>
     </div>
   </div>
 </nav>
 
+<!-- ═══════════ PAGE 1: MONITOR ═══════════ -->
 <main>
-  <div class="section-header"><h2 id="secMonitor">❄️ Cold Storage Monitor</h2><span class="section-badge" id="unitBadge">Unit #1 — Active</span></div>
+<div class="page active" id="pageMonitor">
+  <div class="section-header" style="margin-top:4px"><h2 id="secMonitor">❄️ Cold Storage Monitor</h2><span class="section-badge" id="unitBadge">Unit #1 — Active</span></div>
+
   <div class="kpi-row">
     <div class="kpi"><div class="label"><span class="emoji">🌡️</span><span id="kpiTempLabel">Temperature</span></div><div class="value" id="kpiTemp">—</div><div class="sub" id="kpiTempSub"></div><div class="tag ok" id="kpiTempTag">Normal</div></div>
     <div class="kpi"><div class="label"><span class="emoji">💧</span><span id="kpiHumLabel">Humidity</span></div><div class="value" id="kpiHum">—</div><div class="sub" id="kpiHumSub"></div><div class="tag ok" id="kpiHumTag">Normal</div></div>
@@ -204,80 +280,117 @@ footer{text-align:center;padding:28px;font-size:14px;color:var(--muted);font-wei
     <div class="kpi"><div class="label"><span class="emoji">⚙️</span><span id="kpiCompLabel">Compressor</span></div><div class="value" id="kpiComp">—</div><div class="sub" id="kpiCompSub"></div><div class="tag ok" id="kpiCompTag">Auto</div></div>
   </div>
 
-  <div class="grid-2">
-    <div>
-      <div class="card"><div class="card-head"><h3 id="chartTitle">📈 Temperature & Humidity</h3></div><div class="card-body"><canvas id="chart"></canvas></div></div>
-      <div class="card" style="margin-top:16px"><div class="card-head"><h3 id="shelfTitle">📦 Estimated Shelf Life</h3></div><div class="card-body" id="shelfBody"></div></div>
-    </div>
-    <div>
-      <div class="card"><div class="card-head"><h3 id="ctrlTitle">🎛️ Controls</h3></div>
-        <div class="card-body field-group">
-          <div class="field"><label><span id="modeLabel">Operating Mode</span><span class="fv" id="modeHint">AUTO</span></label><select id="modeSelect"><option value="AUTO">Auto</option><option value="ECO">Eco</option><option value="PRECOOL">Pre-Cool</option><option value="MANUAL">Manual</option></select></div>
-          <div class="field"><label><span id="produceLabel">Produce Stored</span><span class="fv" id="profileHint">—</span></label><select id="produceSelect"><option value="TOMATO">Tomato</option><option value="ONION">Onion</option><option value="POTATO">Potato</option><option value="LEAFY_GREENS">Leafy Greens</option><option value="CARROT">Carrot</option></select></div>
-          <div class="field" id="manualTempField" style="display:none"><label><span id="mtLabel">Temp Setpoint (°C)</span><span class="fv" id="mtVal">6.0</span></label><input id="manualTemp" type="range" min="0" max="15" step="0.5" value="6"/></div>
-          <div class="field" id="manualHumField" style="display:none"><label><span id="mhLabel">Humidity Target (%)</span><span class="fv" id="mhVal">90</span></label><input id="manualHum" type="range" min="50" max="98" step="1" value="90"/></div>
-          <div class="toggle-row"><div class="toggle-info"><div class="t" id="doorLabel">Door Sensor</div><div class="d" id="doorDesc">Closed</div></div><div class="sw" id="doorSw" role="button"></div></div>
-          <div class="toggle-row"><div class="toggle-info"><div class="t" id="gridLabel">Grid Power</div><div class="d" id="gridDesc">Available</div></div><div class="sw on" id="gridSw" role="button"></div></div>
-        </div>
+  <!-- Chart -->
+  <div class="card"><div class="card-head"><h3 id="chartTitle">📈 Temperature & Humidity</h3></div><div class="card-body"><canvas id="chart"></canvas></div></div>
+
+  <!-- Controls -->
+  <div class="card"><div class="card-head"><h3 id="ctrlTitle">🎛️ Controls</h3></div>
+    <div class="card-body field-group">
+      <div class="field"><label><span id="modeLabel">Operating Mode</span><span class="fv" id="modeHint">AUTO</span></label><select id="modeSelect"><option value="AUTO">Auto</option><option value="ECO">Eco</option><option value="PRECOOL">Pre-Cool</option><option value="MANUAL">Manual</option></select></div>
+
+      <!-- Multi-Crop Selector -->
+      <div class="field">
+        <label><span id="produceLabel">Produce in Storage</span><span class="fv" id="profileHint">—</span></label>
+        <div class="crop-chips" id="cropChips"></div>
+        <div id="compromiseBanner"></div>
       </div>
-      <div class="card" style="margin-top:16px"><div class="card-head"><h3 id="alertTitle">🔔 Alerts</h3><span style="font-size:14px;color:var(--muted);font-weight:700" id="alertCount">0</span></div><div class="card-body" id="alertsBody"></div></div>
+
+      <div class="field" id="manualTempField" style="display:none"><label><span id="mtLabel">Temp Setpoint (°C)</span><span class="fv" id="mtVal">6.0</span></label><input id="manualTemp" type="range" min="0" max="15" step="0.5" value="6"/></div>
+      <div class="field" id="manualHumField" style="display:none"><label><span id="mhLabel">Humidity Target (%)</span><span class="fv" id="mhVal">90</span></label><input id="manualHum" type="range" min="50" max="98" step="1" value="90"/></div>
+      <div class="toggle-row"><div class="toggle-info"><div class="t" id="doorLabel">Door Sensor</div><div class="d" id="doorDesc">Closed</div></div><div class="sw" id="doorSw" role="button"></div></div>
+      <div class="toggle-row"><div class="toggle-info"><div class="t" id="gridLabel">Grid Power</div><div class="d" id="gridDesc">Available</div></div><div class="sw on" id="gridSw" role="button"></div></div>
     </div>
   </div>
 
-  <div class="section-header"><h2 id="secWeather">🌤️ Weather & Farm Advisory</h2></div>
-  <div class="grid-2">
-    <div class="card"><div class="card-head"><h3 id="wxLabel">Current Weather</h3><span style="font-size:14px;color:var(--muted);font-weight:600">Lucena City</span></div>
-      <div class="card-body">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="wx-main" id="wxSummary">—</div><div class="wx-detail" id="wxDetail">—</div></div><div class="tag warning" id="wxTag" style="font-size:14px;padding:6px 16px">—</div></div>
-        <div class="wx-advice" id="wxAdvice">—</div>
+  <!-- Shelf Life -->
+  <div class="card"><div class="card-head"><h3 id="shelfTitle">📦 Estimated Shelf Life</h3></div><div class="card-body" id="shelfBody"></div></div>
+
+  <!-- Alerts -->
+  <div class="card"><div class="card-head"><h3 id="alertTitle">🔔 Alerts</h3><span style="font-size:13px;color:var(--muted);font-weight:700" id="alertCount">0</span></div><div class="card-body" id="alertsBody"></div></div>
+</div>
+
+<!-- ═══════════ PAGE 2: WEATHER & MARKET ═══════════ -->
+<div class="page" id="pageWeather">
+  <div class="section-header" style="margin-top:4px"><h2 id="secWeather">🌤️ Weather & Advisory</h2></div>
+  <div class="card">
+    <div class="card-head"><h3 id="wxLabel">Current Weather</h3></div>
+    <div class="card-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div><div class="wx-main" id="wxSummary">—</div><div class="wx-detail" id="wxDetail">—</div></div>
+        <div class="tag warning" id="wxTag" style="font-size:13px;padding:5px 14px">—</div>
       </div>
+      <div class="wx-advice" id="wxAdvice">—</div>
     </div>
-    <div class="card"><div class="card-head"><h3 id="fcTitle">📅 7-Day Forecast</h3></div><div class="card-body" id="fcBody" style="display:flex;gap:8px;overflow-x:auto"></div></div>
   </div>
+  <div class="card"><div class="card-head"><h3 id="fcTitle">📅 7-Day Forecast</h3></div><div class="card-body"><div class="forecast-strip" id="fcBody"></div></div></div>
 
   <div class="section-header"><h2 id="secMarket">💰 Market Prices</h2><span class="section-badge" id="mktBadge">Updated today</span></div>
-  <div class="card"><div class="card-body" style="overflow-x:auto"><table class="price-table"><thead><tr><th id="thCrop">Crop</th><th id="thPrice">Price/kg</th><th id="thChange">Change</th><th id="thAdvice">Advice</th></tr></thead><tbody id="priceBody"></tbody></table></div></div>
+  <div class="info-grid" id="priceGrid"></div>
+</div>
 
-  <div class="section-header"><h2 id="secGuide">🌾 Crop Knowledge Center</h2></div>
-  <div class="grid-3" id="guideGrid"></div>
+<!-- ═══════════ PAGE 3: INFO CENTER ═══════════ -->
+<div class="page" id="pageInfo">
+  <div class="section-header" style="margin-top:4px"><h2 id="secGuide">🌾 Crop Knowledge Center</h2></div>
+  <div class="info-grid" id="guideGrid"></div>
 
   <div class="section-header"><h2 id="secDisease">🦠 Disease & Pest Watch</h2><span class="section-badge" style="background:var(--warnBg);color:var(--warn);border-color:var(--warnBd)" id="disBadge">2 Active Alerts</span></div>
-  <div class="grid-3" id="diseaseGrid"></div>
+  <div class="info-grid" id="diseaseGrid"></div>
 
   <div class="section-header"><h2 id="secSeason">🗓️ Seasonal Planting Calendar</h2></div>
   <div class="card"><div class="card-body"><div class="season-grid" id="seasonGrid"></div></div></div>
 
   <div class="section-header"><h2 id="secTips">💡 Smart Farming Tips</h2></div>
-  <div class="grid-3" id="tipsGrid"></div>
+  <div class="info-grid" id="tipsGrid"></div>
+</div>
 </main>
-<footer id="footerEl">KisanCool — Solar-Powered Smart Cold Storage · SDG 2, 7, 12, 13 · Hult Prize 2026</footer>
+
+<!-- ── Bottom Tab Navigation ── -->
+<div class="bottom-nav" id="bottomNav">
+  <div class="tab active" data-page="pageMonitor">
+    <span class="tab-icon">❄️</span>
+    <span class="tab-label" id="tabMonitor">Monitor</span>
+  </div>
+  <div class="tab" data-page="pageWeather">
+    <span class="tab-icon">🌤️</span>
+    <span class="tab-label" id="tabWeather">Weather</span>
+  </div>
+  <div class="tab" data-page="pageInfo">
+    <span class="tab-icon">📚</span>
+    <span class="tab-label" id="tabInfo">Info</span>
+  </div>
+</div>
 
 <script>
 const $=id=>document.getElementById(id);
 function clamp(x,a,b){return Math.max(a,Math.min(b,x))}
 function rnd(n){return(Math.random()*2-1)*n}
 
-/* ────────── i18n ──��─────── */
+/* ════════════ i18n ════════════ */
 const L={
 en:{
-  navTitle:"KisanCool",tagline:"Smart Agricultural Cold Storage System",connected:"Connected",
+  navTitle:"KisanCool",tagline:"Smart Agricultural Cold Storage",connected:"Connected",
   temp:"Temperature",hum:"Humidity",bat:"Battery",comp:"Compressor",
   normal:"Normal",good:"Good",low:"Low",critical:"Critical",high:"High",
   auto:"Auto",on:"ON",off:"OFF",tgt:"Target",solar:"Solar",
   chartTitle:"📈 Temperature & Humidity",shelfTitle:"📦 Estimated Shelf Life",
-  ctrlTitle:"🎛️ Controls",modeLabel:"Operating Mode",produceLabel:"Produce Stored",
+  ctrlTitle:"🎛️ Controls",modeLabel:"Operating Mode",produceLabel:"Produce in Storage",
   mtLabel:"Temp Setpoint (°C)",mhLabel:"Humidity Target (%)",
   doorLabel:"Door Sensor",doorClosed:"Closed",doorOpen:"Open — cooling paused",
   gridLabel:"Grid Power",gridOn:"Available",gridOff:"Unavailable — off-grid",
-  alertTitle:"��� Alerts",noAlerts:"No alerts. All systems normal.",
+  alertTitle:"🔔 Alerts",noAlerts:"No alerts. All systems normal.",
   rem:"remaining",days:"days",
   unitBadge:"Unit #1 — Active",mktBadge:"Updated today",disBadge:"2 Active Alerts",
-  secMonitor:"❄️ Cold Storage Monitor",secWeather:"🌤️ Weather & Farm Advisory",
+  secMonitor:"❄️ Cold Storage Monitor",secWeather:"🌤️ Weather & Advisory",
   secMarket:"💰 Market Prices",secGuide:"🌾 Crop Knowledge Center",
   secDisease:"🦠 Disease & Pest Watch",secSeason:"🗓️ Seasonal Planting Calendar",secTips:"💡 Smart Farming Tips",
   wxLabel:"Current Weather",fcTitle:"📅 7-Day Forecast",
-  thCrop:"Crop",thPrice:"Price/kg",thChange:"Change",thAdvice:"Advice",
+  tabMonitor:"Monitor",tabWeather:"Weather",tabInfo:"Info",
+  selectCrops:"Tap to select crops stored",
   TOMATO:"Tomato",ONION:"Onion",POTATO:"Potato",LEAFY_GREENS:"Leafy Greens",CARROT:"Carrot",
+  idealRange:"All crops share an ideal temperature range",
+  compromiseRange:"Temperature is a compromise — not all crops in ideal range",
+  noCrops:"No crops selected. Select at least one crop.",
+  cropCount:" crops selected",
   wx:[
     {s:"Sunny · 33°C",d:"Rain 10% · Wind 9 km/h · UV High",tag:"Heat Stress: Medium",tc:"warning",adv:"Harvest early morning to reduce field heat. Pre-cool produce before storage. Irrigate in the evening."},
     {s:"Partly Cloudy · 30°C",d:"Rain 30% · Wind 12 km/h · UV Moderate",tag:"Good for Fieldwork",tc:"ok",adv:"Ideal for harvesting and transport. Apply foliar fertilizers now — good absorption weather."},
@@ -292,13 +405,13 @@ en:{
     modeChanged:{t:"Mode Changed",m:"Operating mode updated."},
     produceChanged:{t:"Produce Updated",m:"Crop profile applied."},
   },
-  shelf:{TOMATO:{n:"Tomato",d:21},ONION:{n:"Onion",d:60},POTATO:{n:"Potato",d:90},LEAFY_GREENS:{n:"Leafy Greens",d:10},CARROT:{n:"Carrot",d:60}},
+  shelf:{TOMATO:{n:"Tomato",e:"🍅",d:21},ONION:{n:"Onion",e:"🧅",d:60},POTATO:{n:"Potato",e:"🥔",d:90},LEAFY_GREENS:{n:"Leafy Greens",e:"🥬",d:10},CARROT:{n:"Carrot",e:"🥕",d:60}},
   prices:[
-    {c:"🍅 Tomato",p:"₹45/kg",ch:"+8%",tr:"up",a:"Prices rising — hold stock 2-3 days"},
-    {c:"🧅 Onion",p:"₹32/kg",ch:"-3%",tr:"down",a:"Slight dip — sell if stored >30 days"},
-    {c:"🥔 Potato",p:"₹28/kg",ch:"+2%",tr:"up",a:"Stable — good time to hold"},
-    {c:"🥬 Leafy Greens",p:"₹55/kg",ch:"+12%",tr:"up",a:"High demand — sell now"},
-    {c:"🥕 Carrot",p:"₹38/kg",ch:"0%",tr:"flat",a:"Flat — store for recovery"},
+    {c:"Tomato",e:"🍅",p:"₹45/kg",ch:"+8%",tr:"up",a:"Prices rising — hold 2-3 days"},
+    {c:"Onion",e:"🧅",p:"₹32/kg",ch:"-3%",tr:"down",a:"Slight dip — sell if stored >30d"},
+    {c:"Potato",e:"🥔",p:"₹28/kg",ch:"+2%",tr:"up",a:"Stable — good time to hold"},
+    {c:"Leafy Greens",e:"🥬",p:"₹55/kg",ch:"+12%",tr:"up",a:"High demand — sell now"},
+    {c:"Carrot",e:"🥕",p:"₹38/kg",ch:"0%",tr:"flat",a:"Flat — store for recovery"},
   ],
   guides:[
     {e:"🍅",t:"Tomato Storage Guide",d:"Optimal storage for maximum freshness",l:["Store at 10–13°C (below 10°C causes chilling injury)","Keep humidity 85–95% to prevent wrinkling","Never store with ethylene-sensitive crops","Sort and remove damaged fruits before storage","Pre-cool within 2 hours of harvest"]},
@@ -308,7 +421,7 @@ en:{
   diseases:[
     {n:"Late Blight",c:"Tomato, Potato",r:"high",b:"Dark water-soaked spots on leaves. Spreads fast in humid conditions (>80% RH, 15–25°C).",a:"Apply copper fungicide immediately. Remove infected plants. Improve spacing for airflow."},
     {n:"Purple Blotch",c:"Onion",r:"medium",b:"Purplish-brown lesions on leaves. Common during high humidity and warm temps.",a:"Apply mancozeb every 10–14 days in wet periods. Ensure drainage. Rotate crops."},
-    {n:"Aphid Infestation",c:"Leafy Greens, Carrot",r:"medium",b:"Small insects on leaf undersides causing curling and yellowing. Transmit viral diseases.",a:"Spray neem oil (5ml/L) in evening. Use yellow sticky traps. Introduce ladybugs as natural predators."},
+    {n:"Aphid Infestation",c:"Leafy Greens, Carrot",r:"medium",b:"Small insects on leaf undersides causing curling and yellowing. Transmit viral diseases.",a:"Spray neem oil (5ml/L) in evening. Use yellow sticky traps. Introduce ladybugs."},
   ],
   seasons:[
     {e:"🍅",n:"Tomato",m:"Oct – Mar",s:true},{e:"🧅",n:"Onion",m:"Nov – Apr",s:true},
@@ -327,12 +440,12 @@ en:{
   footer:"KisanCool — Solar-Powered Smart Cold Storage · SDG 2, 7, 12, 13 · Hult Prize 2026",
 },
 ne:{
-  navTitle:"किसानकूल",tagline:"स्मार्ट कृषि कोल्ड स्टोरेज प्रणाली",connected:"जडान भयो",
+  navTitle:"किसानकूल",tagline:"स्मार्ट कृषि कोल्ड स्टोरेज",connected:"जडान भयो",
   temp:"तापक्रम",hum:"आर्द्रता",bat:"ब्याट्री",comp:"कम्प्रेसर",
   normal:"सामान्य",good:"राम्रो",low:"कम",critical:"गम्भीर",high:"उच्च",
   auto:"स्वचालित",on:"चालु",off:"बन्द",tgt:"लक्ष्य",solar:"सोलार",
   chartTitle:"📈 तापक्रम र आर्द्रता",shelfTitle:"📦 अनुमानित भण्डारण अवधि",
-  ctrlTitle:"🎛️ नियन्त्रण",modeLabel:"सञ्चालन मोड",produceLabel:"भण्डारण गरिएको उत्पादन",
+  ctrlTitle:"🎛️ नियन्त्रण",modeLabel:"सञ्चालन मोड",produceLabel:"भण्डारणमा उत्पादन",
   mtLabel:"तापक्रम सेटपोइन्ट (°C)",mhLabel:"आर्द्रता लक्ष्य (%)",
   doorLabel:"ढोका सेन्सर",doorClosed:"बन्द",doorOpen:"खुला — कूलिंग रोकियो",
   gridLabel:"ग्रिड बिजुली",gridOn:"उपलब्ध",gridOff:"अनुपलब्ध — अफ-ग्रिड",
@@ -341,12 +454,17 @@ ne:{
   unitBadge:"युनिट #१ — सक्रिय",mktBadge:"आज अपडेट",disBadge:"२ सक्रिय सूचना",
   secMonitor:"❄️ कोल्ड स्टोरेज अनुगमन",secWeather:"🌤️ मौसम र कृषि सल्लाह",
   secMarket:"💰 बजार मूल्य",secGuide:"🌾 बाली ज्ञान केन्द्र",
-  secDisease:"🦠 रोग र कीरा सतर्कता",secSeason:"🗓️ मौसमी रोपाइ पात्रो",secTips:"💡 स्म��र्ट खेती सुझावहरू",
+  secDisease:"🦠 रोग र कीरा सतर्कता",secSeason:"🗓️ मौसमी रोपाइ पात्रो",secTips:"💡 स्मार्ट खेती सुझावहरू",
   wxLabel:"हालको मौसम",fcTitle:"📅 ७ दिनको पूर्वानुमान",
-  thCrop:"बाली",thPrice:"मूल्य/के.जी.",thChange:"परिवर्तन",thAdvice:"सल्लाह",
+  tabMonitor:"अनुगमन",tabWeather:"मौसम",tabInfo:"जानकारी",
+  selectCrops:"भण्डारणमा रहेको बाली छान्नुहोस्",
   TOMATO:"गोलभेडा",ONION:"प्याज",POTATO:"आलु",LEAFY_GREENS:"हरियो सागपात",CARROT:"गाजर",
+  idealRange:"सबै बालीको उत्तम तापक्रम सीमा मिल्छ",
+  compromiseRange:"तापक्रम सम्झौता — सबै बालीको आदर्श सीमामा छैन",
+  noCrops:"कुनै बाली छानिएको छैन। कम्तिमा एउटा छान्नुहोस्।",
+  cropCount:" बाली छानिएको",
   wx:[
-    {s:"घाम लागेको · ३३°C",d:"वर्षा १०% · हावा ९ km/h · UV उच्च",tag:"गर्मी तनाव: मध्यम",tc:"warning",adv:"बिहान सबेरै बाली काट्नुहोस्। भण्डारण अघि चिसो गर्नुहोस्। साँझमा सिँचाइ ग��्नुहोस्।"},
+    {s:"घाम लागेको · ३३°C",d:"वर्षा १०% · हावा ९ km/h · UV उच्च",tag:"गर्मी तनाव: मध्यम",tc:"warning",adv:"बिहान सबेरै बाली काट्नुहोस्। भण्डारण अघि चिसो गर्नुहोस्। साँझमा सिँचाइ गर्नुहोस्।"},
     {s:"आंशिक बादल · ३०°C",d:"वर्षा ३०% · हावा १२ km/h · UV मध्यम",tag:"खेतको काम: ठीक",tc:"ok",adv:"बाली काट्न र ढुवानीको लागि उत्तम। अहिले पर्णीय मल प्रयोग गर्नुहोस्।"},
     {s:"गडगडाहट सम्भावित · २८°C",d:"वर्षा ७५% · हावा १८ km/h · UV कम",tag:"ढुसी जोखिम: उच्च",tc:"warning",adv:"स्प्रे नगर्नुहोस् — पानीले धोइदिन्छ। निकासी जाँच गर्नुहोस्। ब्लाइट हेर्नुहोस्।"},
   ],
@@ -359,21 +477,21 @@ ne:{
     modeChanged:{t:"मोड परिवर्तन",m:"सञ्चालन मोड अद्यावधिक गरियो।"},
     produceChanged:{t:"उत्पादन अद्यावधिक",m:"बाली प्रोफाइल लागू गरियो।"},
   },
-  shelf:{TOMATO:{n:"गोलभेडा",d:21},ONION:{n:"प्याज",d:60},POTATO:{n:"आलु",d:90},LEAFY_GREENS:{n:"हरियो सागपात",d:10},CARROT:{n:"गाजर",d:60}},
+  shelf:{TOMATO:{n:"गोलभेडा",e:"🍅",d:21},ONION:{n:"प्याज",e:"🧅",d:60},POTATO:{n:"आलु",e:"🥔",d:90},LEAFY_GREENS:{n:"हरियो सागपात",e:"🥬",d:10},CARROT:{n:"गाजर",e:"🥕",d:60}},
   prices:[
-    {c:"🍅 गोलभेडा",p:"₹४५/के.जी.",ch:"+८%",tr:"up",a:"मूल्य बढ्दैछ — २-३ दिन भण्डारण गर्नुहोस्"},
-    {c:"🧅 प्याज",p:"₹३२/के.जी.",ch:"-३%",tr:"down",a:"थोरै गिरावट — ३० दिन भन्दा बढी भए बेच्नुहोस्"},
-    {c:"🥔 आलु",p:"₹२८/के.जी.",ch:"+२%",tr:"up",a:"स्थिर — भण्डारण गर्न राम्रो"},
-    {c:"🥬 सागपात",p:"₹५५/के.जी.",ch:"+१२%",tr:"up",a:"उच्च माग — अहिले बेच्नुहोस्"},
-    {c:"🥕 गाजर",p:"₹३८/के.जी.",ch:"०%",tr:"flat",a:"सपाट बजार — भण्डारण गर्नुहोस्"},
+    {c:"गोलभेडा",e:"🍅",p:"₹४५/के.जी.",ch:"+८%",tr:"up",a:"मूल्य बढ्दैछ — २-३ दिन राख्नुहोस्"},
+    {c:"प्याज",e:"🧅",p:"₹३२/के.जी.",ch:"-३%",tr:"down",a:"थोरै गिरावट — ३०+ दिन भए बेच्नुहोस्"},
+    {c:"आलु",e:"🥔",p:"₹२८/के.जी.",ch:"+२%",tr:"up",a:"स्थिर — भण्डारण गर्न राम्रो"},
+    {c:"सागपात",e:"🥬",p:"₹५५/के.जी.",ch:"+१२%",tr:"up",a:"उच्च माग — अहिले बेच्नुहोस्"},
+    {c:"गाजर",e:"🥕",p:"₹३८/के.जी.",ch:"०%",tr:"flat",a:"सपाट — भण्डारण गर्नुहोस्"},
   ],
   guides:[
     {e:"🍅",t:"गोलभेडा भण्डारण गाइड",d:"अधिकतम ताजगीको लागि उत्तम भण्डारण",l:["१०–१३°C मा भण्डारण (१०°C भन्दा तल चिसो क्षति)","ओइलाउन रोक्न ८५–९५% आर्द्रता","इथिलीन-संवेदनशील बालीसँग नराख्नुहोस्","क्षतिग्रस्त फल भण्डारण अघि हटाउनुहोस्","काटेको २ घण्टामा फिल्ड हीट हटाउनुहोस्"]},
-    {e:"🧅",t:"प्याज भण्डारण गाइड",d:"दीर्घकालीन गुणस्तर संरक्षण",l:["कोल्ड स्टोरेज अघि २-३ दिन सुकाउनुहोस्","२–८°C मा ६५–७५% आर्द्रतामा भण्डारण","राम्रो हा���ा चलाचल सुनिश्चित गर्नुहोस्","आलुसँग कहिल्यै नराख्नुहोस्","हप्ताको एक पटक जाँच गर्नुहोस्"]},
+    {e:"🧅",t:"प्याज भण्डारण गाइड",d:"दीर्घकालीन गुणस्तर संरक्षण",l:["कोल्ड स्टोरेज अघि २-३ दिन सुकाउनुहोस्","२–८°C मा ६५–७५% आर्द्रतामा भण्डारण","राम्रो हावा चलाचल सुनिश्चित गर्नुहोस्","आलुसँग कहिल्यै नराख्नुहोस्","हप्ताको एक पटक जाँच गर्नुहोस्"]},
     {e:"🥬",t:"हरियो सागपात गाइड",d:"छोटो शेल्फ लाइफ, नाजुक ह्यान्डलिंग",l:["तुरुन्तै १–५°C मा भण्डारण","ओइलाउन रोक्न ९०–९८% आर्द्रता","धोएर अतिरिक्त पानी हटाउनुहोस्","प्वालहरू भएका झोला प्रयोग गर्नुहोस्","७–१० दिन भित्र खपत गर्नुहोस्"]},
   ],
   diseases:[
-    {n:"ढिलो ब्लाइट",c:"गोलभेडा, आलु",r:"high",b:"पातमा गाढा पानी भिजेको धब्बा। आर्द्र अवस्थामा छिटो फैलिन्छ।",a:"तामा आधारित ढुसीनाशक प्र��ोग गर्नुहोस्। संक्रमित बिरुवा हटाउनुहोस्। दूरी बढाउनुहोस्।"},
+    {n:"ढिलो ब्लाइट",c:"गोलभेडा, आलु",r:"high",b:"पातमा गाढा पानी भिजेको धब्बा। आर्द्र अवस्थामा छिटो फैलिन्छ।",a:"तामा आधारित ढुसीनाशक प्रयोग गर्नुहोस्। संक्रमित बिरुवा हटाउनुहोस्। दूरी बढाउनुहोस्।"},
     {n:"बैजनी धब्बा",c:"प्याज",r:"medium",b:"पातमा बैजनी-खैरो घाउ। उच्च आर्द्रता र न्यानो तापक्रममा सामान्य।",a:"भिजेको समयमा म्यान्कोजेब प्रयोग गर्नुहोस्। निकासी सुनिश्चित गर्नुहोस्। बाली चक्र गर्नुहोस्।"},
     {n:"माहुरो प्रकोप",c:"सागपात, गाजर",r:"medium",b:"पातको पछाडि साना कीरा। कुर्चाउने र पहेँलो पार्ने।",a:"साँझमा नीम तेल (५ml/L) छर्कनुहोस्। पहेँलो ट्र्यापहरू प्रयोग गर्नुहोस्।"},
   ],
@@ -397,21 +515,116 @@ ne:{
 let lang="en";
 function t(){return L[lang]}
 
-/* ────────── Crop profiles ────────── */
-const P={TOMATO:{tMin:10,tMax:13,hMin:85,hMax:95},ONION:{tMin:2,tMax:8,hMin:65,hMax:75},POTATO:{tMin:7,tMax:10,hMin:85,hMax:95},LEAFY_GREENS:{tMin:1,tMax:5,hMin:90,hMax:98},CARROT:{tMin:0,tMax:2,hMin:95,hMax:98}};
+/* ════════════ Crop Profiles ════════════ */
+const CROPS={
+  TOMATO:      {tMin:10,tMax:13, hMin:85,hMax:95, emoji:"🍅"},
+  ONION:       {tMin:2, tMax:8,  hMin:65,hMax:75, emoji:"🧅"},
+  POTATO:      {tMin:7, tMax:10, hMin:85,hMax:95, emoji:"🥔"},
+  LEAFY_GREENS:{tMin:1, tMax:5,  hMin:90,hMax:98, emoji:"🥬"},
+  CARROT:      {tMin:0, tMax:2,  hMin:95,hMax:98, emoji:"🥕"},
+};
+const CROP_KEYS=Object.keys(CROPS);
 
-/* ────────── State ────────── */
-const S={mode:"AUTO",produce:"TOMATO",doorOpen:false,grid:true,compOn:false,bat:84,solar:220,amb:33,temp:11.5,hum:88,alerts:[],pts:[],wxIdx:0};
+/* ════════════ State ════════════ */
+const S={
+  mode:"AUTO",
+  selectedCrops:["TOMATO"],
+  doorOpen:false,grid:true,compOn:false,
+  bat:84,solar:220,amb:33,temp:11.5,hum:88,
+  alerts:[],pts:[],wxIdx:0,
+  isCompromise:false,
+};
 
-function tgts(){
-  const p=P[S.produce];
-  if(S.mode==="MANUAL"){const tv=+$("manualTemp").value,hv=+$("manualHum").value;return{tMin:tv-1,tMax:tv+1,hMin:hv-5,hMax:hv+5}}
-  if(S.mode==="ECO")return{tMin:p.tMin,tMax:p.tMax+1.5,hMin:p.hMin,hMax:p.hMax};
-  if(S.mode==="PRECOOL")return{tMin:p.tMin-1,tMax:p.tMin+.5,hMin:p.hMin,hMax:p.hMax};
-  return{...p};
+/* ════════════ Multi-Crop Temperature Logic ════════════ */
+function calcMultiCropTargets(crops){
+  if(crops.length===0) return {tMin:4,tMax:8,hMin:80,hMax:95,isCompromise:false};
+  if(crops.length===1){const c=CROPS[crops[0]];return{...c,isCompromise:false}}
+  // Find intersection of all ranges
+  let tMin=Math.max(...crops.map(c=>CROPS[c].tMin));
+  let tMax=Math.min(...crops.map(c=>CROPS[c].tMax));
+  let hMin=Math.max(...crops.map(c=>CROPS[c].hMin));
+  let hMax=Math.min(...crops.map(c=>CROPS[c].hMax));
+  let isCompromise=false;
+  if(tMin>tMax){
+    // No overlap — find the compromise midpoint
+    isCompromise=true;
+    const gapMid=(tMin+tMax)/2;
+    tMin=Math.round((gapMid-1)*2)/2;
+    tMax=Math.round((gapMid+1)*2)/2;
+  }
+  if(hMin>hMax){
+    isCompromise=true;
+    const hMid=(hMin+hMax)/2;
+    hMin=Math.round(hMid-5);
+    hMax=Math.round(hMid+5);
+  }
+  hMin=clamp(hMin,50,98);
+  hMax=clamp(hMax,hMin,99);
+  return{tMin,tMax,hMin,hMax,isCompromise};
 }
 
-/* ────────── Alerts ────────── */
+function tgts(){
+  if(S.mode==="MANUAL"){
+    const tv=+$("manualTemp").value,hv=+$("manualHum").value;
+    return{tMin:tv-1,tMax:tv+1,hMin:hv-5,hMax:hv+5,isCompromise:false};
+  }
+  const base=calcMultiCropTargets(S.selectedCrops);
+  if(S.mode==="ECO")return{...base,tMax:base.tMax+1.5};
+  if(S.mode==="PRECOOL")return{...base,tMax:base.tMin+.5};
+  return base;
+}
+
+/* ════════════ Crop Chip Selector ════════════ */
+function renderCropChips(){
+  const el=$("cropChips");
+  let h="";
+  for(const key of CROP_KEYS){
+    const sel=S.selectedCrops.includes(key);
+    h+=`<div class="crop-chip${sel?" selected":""}" data-crop="${key}">
+      <span class="chip-check">${sel?"✓":""}</span>
+      <span class="chip-emoji">${CROPS[key].emoji}</span>
+      <span class="chip-name">${t()[key]}</span>
+    </div>`;
+  }
+  el.innerHTML=h;
+  // Attach events
+  el.querySelectorAll(".crop-chip").forEach(chip=>{
+    chip.addEventListener("click",function(){
+      const crop=this.dataset.crop;
+      const idx=S.selectedCrops.indexOf(crop);
+      if(idx>=0){
+        if(S.selectedCrops.length>1) S.selectedCrops.splice(idx,1);
+        // Don't allow 0 crops selected
+      }else{
+        S.selectedCrops.push(crop);
+      }
+      renderCropChips();
+      updateCompromiseBanner();
+      renderShelf();
+      pushA("ok","produceChanged");
+    });
+  });
+  updateProfileHint();
+}
+
+function updateProfileHint(){
+  const tg=tgts();
+  $("profileHint").textContent=tg.tMin+"–"+tg.tMax+"°C";
+}
+
+function updateCompromiseBanner(){
+  const tg=calcMultiCropTargets(S.selectedCrops);
+  const el=$("compromiseBanner");
+  S.isCompromise=tg.isCompromise;
+  if(S.selectedCrops.length<=1){el.innerHTML="";return}
+  if(tg.isCompromise){
+    el.innerHTML=`<div class="compromise-banner compromised"><span class="cb-icon">⚠️</span><span>${t().compromiseRange} · ${t().tgt}: ${tg.tMin}–${tg.tMax}°C</span></div>`;
+  }else{
+    el.innerHTML=`<div class="compromise-banner ideal"><span class="cb-icon">✅</span><span>${t().idealRange} · ${t().tgt}: ${tg.tMin}–${tg.tMax}°C</span></div>`;
+  }
+}
+
+/* ════════════ Alerts ════════════ */
 const aCD=new Map();
 function pushA(lv,key){
   const now=Date.now();if(now-(aCD.get(key)||0)<20000)return;aCD.set(key,now);
@@ -425,18 +638,19 @@ function renderAlerts(){
   let h="";
   for(const a of S.alerts){
     const ai=t().al[a.key]||{t:a.ti,m:a.msg};
-    h+=`<div class="alert-item ${a.lv}"><div class="alert-icon">${a.lv==="ok"?"✓":a.lv==="warning"?"!":"×"}</div><div class="alert-text"><div class="ah">${ai.t} <span style="font-weight:400;color:var(--muted);font-size:13px">${a.ts.toLocaleTimeString()}</span></div><div class="ad">${ai.m}</div></div></div>`;
+    h+=`<div class="alert-item ${a.lv}"><div class="alert-icon">${a.lv==="ok"?"✓":a.lv==="warning"?"!":"×"}</div><div class="alert-text"><div class="ah">${ai.t} <span style="font-weight:400;color:var(--muted);font-size:12px">${a.ts.toLocaleTimeString()}</span></div><div class="ad">${ai.m}</div></div></div>`;
   }
   b.innerHTML=h;
 }
 
-/* ────────── Static sections ────────── */
+/* ════════════ Static Section Renderers ════════════ */
 function renderPrices(){
   let h="";for(const p of t().prices){
     const cls=p.tr==="up"?"trend-up":p.tr==="down"?"trend-down":"trend-flat";
-    h+=`<tr><td>${p.c}</td><td>${p.p}</td><td class="${cls}">${p.ch}</td><td style="font-size:14px;color:var(--muted)">${p.a}</td></tr>`;
+    const arrow=p.tr==="up"?"↑":p.tr==="down"?"↓":"→";
+    h+=`<div class="price-card"><div class="pc-emoji">${p.e}</div><div class="pc-info"><div class="pc-name">${p.c}</div><div class="pc-price">${p.p}</div></div><div class="pc-right"><div class="pc-change ${cls}">${arrow} ${p.ch}</div><div class="pc-advice">${p.a}</div></div></div>`;
   }
-  $("priceBody").innerHTML=h;
+  $("priceGrid").innerHTML=h;
 }
 function renderGuides(){
   let h="";for(const g of t().guides){
@@ -476,17 +690,24 @@ function renderWeather(){
   $("wxAdvice").textContent=w.adv;
 }
 function renderShelf(){
-  const info=t().shelf[S.produce];const stored=3;const rem=info.d-stored;
-  const pct=clamp(rem/info.d*100,0,100);
-  const col=pct>50?"var(--good)":pct>20?"var(--warn)":"var(--bad)";
-  $("shelfBody").innerHTML=`<div class="shelf-item"><span class="shelf-name">${info.n}</span><span class="shelf-days">${rem} ${t().days} ${t().rem}</span><div class="shelf-bar"><div class="fill" style="width:${pct}%;background:${col}"></div></div></div>`;
+  if(S.selectedCrops.length===0){
+    $("shelfBody").innerHTML=`<div class="empty-note">${t().noCrops}</div>`;return;
+  }
+  let h="";
+  for(const crop of S.selectedCrops){
+    const info=t().shelf[crop];if(!info)continue;
+    const stored=3;const rem=info.d-stored;
+    const pct=clamp(rem/info.d*100,0,100);
+    const col=pct>50?"var(--good)":pct>20?"var(--warn)":"var(--bad)";
+    h+=`<div class="shelf-item"><span class="shelf-name">${info.e} ${info.n}</span><span class="shelf-days">${rem} ${t().days} ${t().rem}</span><div class="shelf-bar"><div class="fill" style="width:${pct}%;background:${col}"></div></div></div>`;
+  }
+  $("shelfBody").innerHTML=h;
 }
 
-/* ────────── Translate all ────────── */
+/* ════════════ Translate All ════════════ */
 function applyLang(){
   const l=t();
   $("navTitle").textContent=l.navTitle;$("navTagline").textContent=l.tagline;
-  $("statusLabel").textContent=l.connected;
   $("kpiTempLabel").textContent=l.temp;$("kpiHumLabel").textContent=l.hum;
   $("kpiBatLabel").textContent=l.bat;$("kpiCompLabel").textContent=l.comp;
   $("chartTitle").textContent=l.chartTitle;$("shelfTitle").textContent=l.shelfTitle;
@@ -502,17 +723,18 @@ function applyLang(){
   $("secWeather").textContent=l.secWeather;$("wxLabel").textContent=l.wxLabel;
   $("fcTitle").textContent=l.fcTitle;
   $("secMarket").textContent=l.secMarket;$("mktBadge").textContent=l.mktBadge;
-  $("thCrop").textContent=l.thCrop;$("thPrice").textContent=l.thPrice;
-  $("thChange").textContent=l.thChange;$("thAdvice").textContent=l.thAdvice;
   $("secGuide").textContent=l.secGuide;$("secDisease").textContent=l.secDisease;
   $("disBadge").textContent=l.disBadge;$("secSeason").textContent=l.secSeason;
-  $("secTips").textContent=l.secTips;$("footerEl").textContent=l.footer;
-  // produce select options
-  [...$("produceSelect").options].forEach(o=>{o.textContent=l[o.value]||o.value});
+  $("secTips").textContent=l.secTips;
+  $("tabMonitor").textContent=l.tabMonitor;
+  $("tabWeather").textContent=l.tabWeather;
+  $("tabInfo").textContent=l.tabInfo;
   document.querySelectorAll(".lang-toggle span").forEach(s=>s.classList.toggle("active",s.dataset.lang===lang));
+  renderCropChips();updateCompromiseBanner();
   renderAlerts();renderWeather();renderForecast();renderPrices();renderGuides();renderDiseases();renderSeasons();renderTips();renderShelf();
 }
-/* ────────── Chart ────────── */
+
+/* ════════════ Chart ════════════ */
 const canvas=$("chart"),ctx=canvas.getContext("2d");
 function resizeCanvas(){
   const dpr=devicePixelRatio||1,r=canvas.getBoundingClientRect();
@@ -525,11 +747,11 @@ function drawChart(){
   const w=canvas.getBoundingClientRect().width,h=canvas.getBoundingClientRect().height;
   ctx.clearRect(0,0,w,h);
   ctx.strokeStyle="rgba(0,0,0,.06)";ctx.lineWidth=1;
-  for(let i=1;i<5;i++){const y=h/5*i;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  for(let i=1;i<5;i++){const y=h/5*i;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
   const pts=S.pts.slice(-60);
   if(pts.length<2)return;
   const tg=tgts();
-  const temps=pts.map(p=>p.t2),hums=pts.map(p=>p.h2);
+  const temps=pts.map(p=>p.t2);
   const tL=Math.min(...temps,0),tH=Math.max(...temps,15);
   const hL=50,hH=98;
   const px=10,py=10;
@@ -537,24 +759,24 @@ function drawChart(){
   const yT=v=>py+(1-(v-tL)/(tH-tL||1))*(h-py*2);
   const yH=v=>py+(1-(v-hL)/(hH-hL||1))*(h-py*2);
   // target band
-  ctx.fillStyle="rgba(37,99,235,.08)";
+  ctx.fillStyle=S.isCompromise?"rgba(217,119,6,.08)":"rgba(37,99,235,.08)";
   const y1=yT(tg.tMax),y2=yT(tg.tMin);
   ctx.fillRect(0,Math.min(y1,y2),w,Math.abs(y2-y1));
   // temp line
   ctx.strokeStyle="#2563eb";ctx.lineWidth=2.5;ctx.lineJoin="round";ctx.beginPath();
-  pts.forEach((p,i)=>{const x=xAt(i),y=yT(p.t2);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();
+  pts.forEach((p,i)=>{const x=xAt(i),y=yT(p.t2);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});ctx.stroke();
   // hum line
   ctx.strokeStyle="#059669";ctx.lineWidth=2.5;ctx.beginPath();
-  pts.forEach((p,i)=>{const x=xAt(i),y=yH(p.h2);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();
+  pts.forEach((p,i)=>{const x=xAt(i),y=yH(p.h2);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});ctx.stroke();
   // legend
-  ctx.font="bold 13px "+getComputedStyle(document.body).fontFamily;
-  ctx.fillStyle="#2563eb";ctx.fillText(lang==="ne"?"तापक्रम (°C)":"Temp (°C)",14,20);
-  ctx.fillStyle="#059669";ctx.fillText(lang==="ne"?"आर्द्रता (%)":"Humidity (%)",14,38);
+  ctx.font="bold 12px "+getComputedStyle(document.body).fontFamily;
+  ctx.fillStyle="#2563eb";ctx.fillText(lang==="ne"?"तापक्रम (°C)":"Temp (°C)",12,18);
+  ctx.fillStyle="#059669";ctx.fillText(lang==="ne"?"आर्द्रता (%)":"Humidity (%)",12,34);
 }
 
-/* ────────── Simulation step ────────── */
+/* ════════════ Simulation Step ════════════ */
 function step(){
-  $("clockLabel").textContent=new Date().toLocaleTimeString();
+  $("clockLabel").textContent=new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
   const tg=tgts();
   // compressor
   if(S.doorOpen){S.compOn=false}
@@ -609,7 +831,22 @@ function step(){
   drawChart();
 }
 
-/* ────────── Events ────────── */
+/* ════════════ Page Navigation ════════════ */
+function switchPage(pageId){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  $(pageId).classList.add("active");
+  document.querySelectorAll(".bottom-nav .tab").forEach(t=>t.classList.toggle("active",t.dataset.page===pageId));
+  window.scrollTo({top:0,behavior:"instant"});
+  if(pageId==="pageMonitor")resizeCanvas();
+}
+
+$("bottomNav").addEventListener("click",function(e){
+  const tab=e.target.closest(".tab");
+  if(!tab)return;
+  switchPage(tab.dataset.page);
+});
+
+/* ════════════ Events ════════════ */
 $("langToggle").addEventListener("click",function(e){
   const sp=e.target.closest("span[data-lang]");
   if(!sp)return;
@@ -623,14 +860,7 @@ $("modeSelect").addEventListener("change",function(){
   $("manualTempField").style.display=S.mode==="MANUAL"?"block":"none";
   $("manualHumField").style.display=S.mode==="MANUAL"?"block":"none";
   pushA("ok","modeChanged");
-});
-
-$("produceSelect").addEventListener("change",function(){
-  S.produce=this.value;
-  const p=P[S.produce];
-  $("profileHint").textContent=p.tMin+"–"+p.tMax+"°C";
-  pushA("ok","produceChanged");
-  renderShelf();
+  updateProfileHint();
 });
 
 $("manualTemp").addEventListener("input",function(){$("mtVal").textContent=Number(this.value).toFixed(1)});
@@ -651,9 +881,8 @@ $("gridSw").addEventListener("click",function(){
   $("gridDesc").textContent=S.grid?t().gridOn:t().gridOff;
 });
 
-/* ────────── Init ────────── */
+/* ════════════ Init ════════════ */
 function init(){
-  $("profileHint").textContent=P[S.produce].tMin+"–"+P[S.produce].tMax+"°C";
   // seed chart
   for(let i=0;i<25;i++){
     S.pts.push({t2:S.temp+rnd(.3),h2:S.hum+rnd(1.5)});
