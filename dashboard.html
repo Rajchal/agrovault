@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>KisanCool — Smart Agricultural Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+:root{
+  --bg:#f0f2f5;--card:#ffffff;--text:#111827;--muted:#6b7280;
+  --good:#059669;--goodBg:#ecfdf5;--goodBd:#a7f3d0;
+  --warn:#d97706;--warnBg:#fffbeb;--warnBd:#fde68a;
+  --bad:#dc2626;--badBg:#fef2f2;--badBd:#fecaca;
+  --accent:#2563eb;--accentBg:#eff6ff;--accentBd:#bfdbfe;
+  --border:#e5e7eb;
+  --shadow:0 1px 3px rgba(0,0,0,.06);
+  --shadowLg:0 4px 20px rgba(0,0,0,.08);
+  --radius:16px;
+  --sans:'Inter',system-ui,-apple-system,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px}
+
+nav{
+  background:rgba(255,255,255,.95);border-bottom:1px solid var(--border);
+  padding:16px 28px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);flex-wrap:wrap;gap:12px;
+}
+.nav-left{display:flex;align-items:center;gap:14px}
+.logo{
+  width:46px;height:46px;border-radius:14px;
+  background:linear-gradient(135deg,#059669,#2563eb);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:24px;box-shadow:0 2px 8px rgba(37,99,235,.25);
+}
+.brand h1{font-size:22px;font-weight:900;letter-spacing:-.3px;line-height:1.2}
+.brand .tagline{font-size:14px;color:var(--muted);font-weight:500}
+.nav-right{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.nav-meta{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;background:#f8fafc;border:1px solid var(--border);border-radius:999px;
+  font-size:14px;color:var(--muted);font-weight:600;
+}
+.status-dot{width:10px;height:10px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px rgba(5,150,105,.2);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(5,150,105,.2)}50%{box-shadow:0 0 0 6px rgba(5,150,105,.1)}}
+.lang-toggle{
+  display:flex;background:#f1f5f9;border:1px solid var(--border);border-radius:999px;
+  padding:4px;cursor:pointer;user-select:none;
+}
+.lang-toggle span{
+  padding:6px 16px;border-radius:999px;font-size:14px;font-weight:700;
+  transition:all .25s;color:var(--muted);
+}
+.lang-toggle span.active{background:#fff;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+
+main{max-width:1280px;margin:0 auto;padding:24px 28px 60px}
+
+.section-header{display:flex;align-items:center;gap:10px;margin:32px 0 16px}
+.section-header:first-child{margin-top:0}
+.section-header h2{font-size:22px;font-weight:900;letter-spacing:-.3px}
+.section-badge{padding:4px 14px;border-radius:999px;font-size:13px;font-weight:700;background:var(--accentBg);color:var(--accent);border:1px solid var(--accentBd)}
+
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:8px}
+@media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.kpi-row{grid-template-columns:1fr}}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);transition:box-shadow .2s}
+.kpi:hover{box-shadow:var(--shadowLg)}
+.kpi .label{font-size:15px;color:var(--muted);margin-bottom:6px;font-weight:600;display:flex;align-items:center;gap:8px}
+.kpi .emoji{font-size:22px}
+.kpi .value{font-size:38px;font-weight:900;letter-spacing:-1px;line-height:1.1}
+.kpi .sub{font-size:14px;color:var(--muted);margin-top:8px;font-weight:500}
+.tag{display:inline-flex;padding:4px 14px;border-radius:999px;font-size:13px;font-weight:700;margin-top:8px}
+.tag.ok{background:var(--goodBg);color:var(--good);border:1px solid var(--goodBd)}
+.tag.warning{background:var(--warnBg);color:var(--warn);border:1px solid var(--warnBd)}
+.tag.danger{background:var(--badBg);color:var(--bad);border:1px solid var(--badBd)}
+
+.grid-2{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-2-equal{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:900px){.grid-2,.grid-3,.grid-2-equal{grid-template-columns:1fr}}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:box-shadow .2s}
+.card:hover{box-shadow:var(--shadowLg)}
+.card-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-head h3{font-size:17px;font-weight:800;display:flex;align-items:center;gap:8px}
+.card-body{padding:22px}
+
+canvas{width:100%;height:240px;display:block}
+
+.field-group{display:flex;flex-direction:column;gap:12px}
+.field{background:#f8fafc;border:1px solid var(--border);border-radius:14px;padding:16px}
+.field label{font-size:14px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-weight:600}
+.field .fv{font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:700}
+select{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--text);font-size:15px;font-weight:600;outline:none;font-family:var(--sans);cursor:pointer}
+select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:16px;background:#f8fafc;border:1px solid var(--border);border-radius:14px}
+.toggle-info .t{font-size:15px;font-weight:700}
+.toggle-info .d{font-size:14px;color:var(--muted);font-weight:500}
+.sw{width:52px;height:28px;border-radius:999px;background:#d1d5db;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .25s;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.sw.on{background:var(--good)}.sw.on::after{transform:translateX(24px)}
+
+.alert-item{padding:14px 16px;border-radius:14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;font-size:14px}
+.alert-item.ok{background:var(--goodBg);border:1px solid var(--goodBd)}
+.alert-item.warning{background:var(--warnBg);border:1px solid var(--warnBd)}
+.alert-item.danger{background:var(--badBg);border:1px solid var(--badBd)}
+.alert-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex-shrink:0}
+.alert-item.ok .alert-icon{background:#d1fae5;color:var(--good)}
+.alert-item.warning .alert-icon{background:#fef3c7;color:var(--warn)}
+.alert-item.danger .alert-icon{background:#fee2e2;color:var(--bad)}
+.alert-text .ah{font-weight:700;font-size:15px}
+.alert-text .ad{color:var(--muted);margin-top:3px;font-size:14px;line-height:1.5}
+
+.wx-main{font-size:30px;font-weight:900;letter-spacing:-.5px}
+.wx-detail{font-size:15px;color:var(--muted);margin-top:6px;font-weight:500}
+.wx-advice{margin-top:14px;padding:14px 16px;background:var(--accentBg);border:1px solid var(--accentBd);border-radius:14px;font-size:15px;color:#1e40af;font-weight:500;line-height:1.6}
+
+.forecast-day{text-align:center;padding:14px 10px;border-radius:14px;background:#f8fafc;border:1px solid var(--border);min-width:70px;flex:1}
+.forecast-day .fd-icon{font-size:28px}
+.forecast-day .fd-temp{font-size:16px;font-weight:800;margin-top:4px}
+.forecast-day .fd-label{font-size:12px;color:var(--muted);font-weight:600}
+
+.shelf-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.shelf-item:last-child{border-bottom:none}
+.shelf-name{font-weight:700;font-size:16px}
+.shelf-days{font-size:14px;color:var(--muted);font-weight:600;white-space:nowrap}
+.shelf-bar{width:120px;height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;flex-shrink:0}
+.shelf-bar .fill{height:100%;border-radius:999px;transition:width .5s}
+
+.info-card{padding:22px;border-radius:16px;border:1px solid var(--border);background:#f8fafc;transition:background .2s,box-shadow .2s}
+.info-card:hover{background:#fff;box-shadow:var(--shadowLg)}
+.info-card .ic-emoji{font-size:36px;margin-bottom:10px}
+.info-card .ic-title{font-size:18px;font-weight:800;margin-bottom:6px}
+.info-card .ic-desc{font-size:15px;color:var(--muted);line-height:1.6;font-weight:500}
+.ic-list{list-style:none;padding:0;margin-top:12px}
+.ic-list li{padding:7px 0;border-bottom:1px solid var(--border);font-size:15px;font-weight:500;display:flex;align-items:flex-start;gap:8px}
+.ic-list li:last-child{border-bottom:none}
+.ic-list li::before{content:"→";color:var(--accent);font-weight:700;flex-shrink:0}
+
+.price-table{width:100%;border-collapse:collapse}
+.price-table th{text-align:left;padding:14px;font-size:14px;font-weight:700;color:var(--muted);border-bottom:2px solid var(--border);text-transform:uppercase;letter-spacing:.5px}
+.price-table td{padding:16px 14px;font-size:16px;font-weight:600;border-bottom:1px solid var(--border)}
+.price-table tr:last-child td{border-bottom:none}
+.trend-up{color:var(--good)}.trend-down{color:var(--bad)}.trend-flat{color:var(--warn)}
+
+.season-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:700px){.season-grid{grid-template-columns:repeat(2,1fr)}}
+.season-item{padding:16px;border-radius:14px;text-align:center;border:1px solid var(--border)}
+.season-item .s-emoji{font-size:32px;display:block;margin-bottom:6px}
+.season-item .s-name{font-size:16px;font-weight:800}
+.season-item .s-months{font-size:13px;color:var(--muted);font-weight:500;margin-top:4px}
+.season-item.in-season{background:var(--goodBg);border-color:var(--goodBd)}
+.season-item.off-season{background:#f8fafc}
+
+.disease-card{padding:20px;border-radius:16px;border:1px solid var(--border);background:#fff}
+.disease-card .d-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.disease-card .d-name{font-size:18px;font-weight:800}
+.disease-card .d-crop{font-size:14px;color:var(--muted);font-weight:600}
+.d-risk{padding:4px 12px;border-radius:999px;font-size:12px;font-weight:700}
+.d-risk.high{background:var(--badBg);color:var(--bad);border:1px solid var(--badBd)}
+.d-risk.medium{background:var(--warnBg);color:var(--warn);border:1px solid var(--warnBd)}
+.d-risk.low{background:var(--goodBg);color:var(--good);border:1px solid var(--goodBd)}
+.disease-card .d-body{font-size:15px;color:var(--muted);line-height:1.6;font-weight:500;margin-bottom:12px}
+.disease-card .d-action{padding:14px;border-radius:12px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:14px;color:#065f46;font-weight:600;line-height:1.5}
+
+.empty-note{font-size:15px;color:var(--muted);padding:12px 0;font-weight:500}
+footer{text-align:center;padding:28px;font-size:14px;color:var(--muted);font-weight:500;border-top:1px solid var(--border);margin-top:40px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <div class="logo">🌱</div>
+    <div class="brand">
+      <h1 id="navTitle">KisanCool</h1>
+      <div class="tagline" id="navTagline">Smart Agricultural Cold Storage System</div>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="lang-toggle" id="langToggle">
+      <span class="active" data-lang="en">English</span>
+      <span data-lang="ne">नेपाली</span>
+    </div>
+    <div class="nav-meta">
+      <span class="status-dot"></span>
+      <span id="statusLabel">Connected</span>
+      <span style="color:#d1d5db">•</span>
+      <span id="clockLabel"></span>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="section-header"><h2 id="secMonitor">❄️ Cold Storage Monitor</h2><span class="section-badge" id="unitBadge">Unit #1 — Active</span></div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="label"><span class="emoji">🌡️</span><span id="kpiTempLabel">Temperature</span></div><div class="value" id="kpiTemp">—</div><div class="sub" id="kpiTempSub"></div><div class="tag ok" id="kpiTempTag">Normal</div></div>
+    <div class="kpi"><div class="label"><span class="emoji">💧</span><span id="kpiHumLabel">Humidity</span></div><div class="value" id="kpiHum">—</div><div class="sub" id="kpiHumSub"></div><div class="tag ok" id="kpiHumTag">Normal</div></div>
+    <div class="kpi"><div class="label"><span class="emoji">🔋</span><span id="kpiBatLabel">Battery</span></div><div class="value" id="kpiBat">—</div><div class="sub" id="kpiBatSub"></div><div class="tag ok" id="kpiBatTag">Good</div></div>
+    <div class="kpi"><div class="label"><span class="emoji">⚙️</span><span id="kpiCompLabel">Compressor</span></div><div class="value" id="kpiComp">—</div><div class="sub" id="kpiCompSub"></div><div class="tag ok" id="kpiCompTag">Auto</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <div class="card"><div class="card-head"><h3 id="chartTitle">📈 Temperature & Humidity</h3></div><div class="card-body"><canvas id="chart"></canvas></div></div>
+      <div class="card" style="margin-top:16px"><div class="card-head"><h3 id="shelfTitle">📦 Estimated Shelf Life</h3></div><div class="card-body" id="shelfBody"></div></div>
+    </div>
+    <div>
+      <div class="card"><div class="card-head"><h3 id="ctrlTitle">🎛️ Controls</h3></div>
+        <div class="card-body field-group">
+          <div class="field"><label><span id="modeLabel">Operating Mode</span><span class="fv" id="modeHint">AUTO</span></label><select id="modeSelect"><option value="AUTO">Auto</option><option value="ECO">Eco</option><option value="PRECOOL">Pre-Cool</option><option value="MANUAL">Manual</option></select></div>
+          <div class="field"><label><span id="produceLabel">Produce Stored</span><span class="fv" id="profileHint">—</span></label><select id="produceSelect"><option value="TOMATO">Tomato</option><option value="ONION">Onion</option><option value="POTATO">Potato</option><option value="LEAFY_GREENS">Leafy Greens</option><option value="CARROT">Carrot</option></select></div>
+          <div class="field" id="manualTempField" style="display:none"><label><span id="mtLabel">Temp Setpoint (°C)</span><span class="fv" id="mtVal">6.0</span></label><input id="manualTemp" type="range" min="0" max="15" step="0.5" value="6"/></div>
+          <div class="field" id="manualHumField" style="display:none"><label><span id="mhLabel">Humidity Target (%)</span><span class="fv" id="mhVal">90</span></label><input id="manualHum" type="range" min="50" max="98" step="1" value="90"/></div>
+          <div class="toggle-row"><div class="toggle-info"><div class="t" id="doorLabel">Door Sensor</div><div class="d" id="doorDesc">Closed</div></div><div class="sw" id="doorSw" role="button"></div></div>
+          <div class="toggle-row"><div class="toggle-info"><div class="t" id="gridLabel">Grid Power</div><div class="d" id="gridDesc">Available</div></div><div class="sw on" id="gridSw" role="button"></div></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px"><div class="card-head"><h3 id="alertTitle">🔔 Alerts</h3><span style="font-size:14px;color:var(--muted);font-weight:700" id="alertCount">0</span></div><div class="card-body" id="alertsBody"></div></div>
+    </div>
+  </div>
+
+  <div class="section-header"><h2 id="secWeather">🌤️ Weather & Farm Advisory</h2></div>
+  <div class="grid-2">
+    <div class="card"><div class="card-head"><h3 id="wxLabel">Current Weather</h3><span style="font-size:14px;color:var(--muted);font-weight:600">Lucena City</span></div>
+      <div class="card-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="wx-main" id="wxSummary">—</div><div class="wx-detail" id="wxDetail">—</div></div><div class="tag warning" id="wxTag" style="font-size:14px;padding:6px 16px">—</div></div>
+        <div class="wx-advice" id="wxAdvice">—</div>
+      </div>
+    </div>
+    <div class="card"><div class="card-head"><h3 id="fcTitle">📅 7-Day Forecast</h3></div><div class="card-body" id="fcBody" style="display:flex;gap:8px;overflow-x:auto"></div></div>
+  </div>
+
+  <div class="section-header"><h2 id="secMarket">💰 Market Prices</h2><span class="section-badge" id="mktBadge">Updated today</span></div>
+  <div class="card"><div class="card-body" style="overflow-x:auto"><table class="price-table"><thead><tr><th id="thCrop">Crop</th><th id="thPrice">Price/kg</th><th id="thChange">Change</th><th id="thAdvice">Advice</th></tr></thead><tbody id="priceBody"></tbody></table></div></div>
+
+  <div class="section-header"><h2 id="secGuide">🌾 Crop Knowledge Center</h2></div>
+  <div class="grid-3" id="guideGrid"></div>
+
+  <div class="section-header"><h2 id="secDisease">🦠 Disease & Pest Watch</h2><span class="section-badge" style="background:var(--warnBg);color:var(--warn);border-color:var(--warnBd)" id="disBadge">2 Active Alerts</span></div>
+  <div class="grid-3" id="diseaseGrid"></div>
+
+  <div class="section-header"><h2 id="secSeason">🗓️ Seasonal Planting Calendar</h2></div>
+  <div class="card"><div class="card-body"><div class="season-grid" id="seasonGrid"></div></div></div>
+
+  <div class="section-header"><h2 id="secTips">💡 Smart Farming Tips</h2></div>
+  <div class="grid-3" id="tipsGrid"></div>
+</main>
+<footer id="footerEl">KisanCool — Solar-Powered Smart Cold Storage · SDG 2, 7, 12, 13 · Hult Prize 2026</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+function clamp(x,a,b){return Math.max(a,Math.min(b,x))}
+function rnd(n){return(Math.random()*2-1)*n}
+
+/* ────────── i18n ──��─────── */
+const L={
+en:{
+  navTitle:"KisanCool",tagline:"Smart Agricultural Cold Storage System",connected:"Connected",
+  temp:"Temperature",hum:"Humidity",bat:"Battery",comp:"Compressor",
+  normal:"Normal",good:"Good",low:"Low",critical:"Critical",high:"High",
+  auto:"Auto",on:"ON",off:"OFF",tgt:"Target",solar:"Solar",
+  chartTitle:"📈 Temperature & Humidity",shelfTitle:"📦 Estimated Shelf Life",
+  ctrlTitle:"🎛️ Controls",modeLabel:"Operating Mode",produceLabel:"Produce Stored",
+  mtLabel:"Temp Setpoint (°C)",mhLabel:"Humidity Target (%)",
+  doorLabel:"Door Sensor",doorClosed:"Closed",doorOpen:"Open — cooling paused",
+  gridLabel:"Grid Power",gridOn:"Available",gridOff:"Unavailable — off-grid",
+  alertTitle:"��� Alerts",noAlerts:"No alerts. All systems normal.",
+  rem:"remaining",days:"days",
+  unitBadge:"Unit #1 — Active",mktBadge:"Updated today",disBadge:"2 Active Alerts",
+  secMonitor:"❄️ Cold Storage Monitor",secWeather:"🌤️ Weather & Farm Advisory",
+  secMarket:"💰 Market Prices",secGuide:"🌾 Crop Knowledge Center",
+  secDisease:"🦠 Disease & Pest Watch",secSeason:"🗓️ Seasonal Planting Calendar",secTips:"💡 Smart Farming Tips",
+  wxLabel:"Current Weather",fcTitle:"📅 7-Day Forecast",
+  thCrop:"Crop",thPrice:"Price/kg",thChange:"Change",thAdvice:"Advice",
+  TOMATO:"Tomato",ONION:"Onion",POTATO:"Potato",LEAFY_GREENS:"Leafy Greens",CARROT:"Carrot",
+  wx:[
+    {s:"Sunny · 33°C",d:"Rain 10% · Wind 9 km/h · UV High",tag:"Heat Stress: Medium",tc:"warning",adv:"Harvest early morning to reduce field heat. Pre-cool produce before storage. Irrigate in the evening."},
+    {s:"Partly Cloudy · 30°C",d:"Rain 30% · Wind 12 km/h · UV Moderate",tag:"Good for Fieldwork",tc:"ok",adv:"Ideal for harvesting and transport. Apply foliar fertilizers now — good absorption weather."},
+    {s:"Thunderstorm Likely · 28°C",d:"Rain 75% · Wind 18 km/h · UV Low",tag:"Fungal Risk: High",tc:"warning",adv:"Delay spraying — rain washes off chemicals. Check drainage. Monitor crops for early blight."},
+  ],
+  fc:[["Mon","☀️","33°"],["Tue","⛅","31°"],["Wed","🌧️","28°"],["Thu","⛅","30°"],["Fri","☀️","32°"],["Sat","☀️","34°"],["Sun","🌦️","29°"]],
+  al:{
+    highTemp:{t:"High Temperature",m:"Internal temp exceeds safe range. Check door and airflow."},
+    lowTemp:{t:"Low Temperature",m:"Temp below safe range. Risk of chilling injury."},
+    lowBat:{t:"Low Battery",m:"Battery critically low. Switch to Eco mode."},
+    doorOpen:{t:"Door Open",m:"Door open. Cooling paused to save energy."},
+    modeChanged:{t:"Mode Changed",m:"Operating mode updated."},
+    produceChanged:{t:"Produce Updated",m:"Crop profile applied."},
+  },
+  shelf:{TOMATO:{n:"Tomato",d:21},ONION:{n:"Onion",d:60},POTATO:{n:"Potato",d:90},LEAFY_GREENS:{n:"Leafy Greens",d:10},CARROT:{n:"Carrot",d:60}},
+  prices:[
+    {c:"🍅 Tomato",p:"₹45/kg",ch:"+8%",tr:"up",a:"Prices rising — hold stock 2-3 days"},
+    {c:"🧅 Onion",p:"₹32/kg",ch:"-3%",tr:"down",a:"Slight dip — sell if stored >30 days"},
+    {c:"🥔 Potato",p:"₹28/kg",ch:"+2%",tr:"up",a:"Stable — good time to hold"},
+    {c:"🥬 Leafy Greens",p:"₹55/kg",ch:"+12%",tr:"up",a:"High demand — sell now"},
+    {c:"🥕 Carrot",p:"₹38/kg",ch:"0%",tr:"flat",a:"Flat — store for recovery"},
+  ],
+  guides:[
+    {e:"🍅",t:"Tomato Storage Guide",d:"Optimal storage for maximum freshness",l:["Store at 10–13°C (below 10°C causes chilling injury)","Keep humidity 85–95% to prevent wrinkling","Never store with ethylene-sensitive crops","Sort and remove damaged fruits before storage","Pre-cool within 2 hours of harvest"]},
+    {e:"🧅",t:"Onion Storage Guide",d:"Long-term quality preservation",l:["Cure 2-3 days in warm dry air before cold storage","Store at 2–8°C with 65–75% humidity","Ensure good ventilation — onions release moisture","Never store near potatoes","Check weekly for soft or sprouting bulbs"]},
+    {e:"🥬",t:"Leafy Greens Guide",d:"Delicate handling, short shelf life",l:["Store immediately at 1–5°C","Maintain 90–98% humidity to prevent wilting","Wash gently, remove excess water","Use perforated bags for airflow","Consume within 7–10 days"]},
+  ],
+  diseases:[
+    {n:"Late Blight",c:"Tomato, Potato",r:"high",b:"Dark water-soaked spots on leaves. Spreads fast in humid conditions (>80% RH, 15–25°C).",a:"Apply copper fungicide immediately. Remove infected plants. Improve spacing for airflow."},
+    {n:"Purple Blotch",c:"Onion",r:"medium",b:"Purplish-brown lesions on leaves. Common during high humidity and warm temps.",a:"Apply mancozeb every 10–14 days in wet periods. Ensure drainage. Rotate crops."},
+    {n:"Aphid Infestation",c:"Leafy Greens, Carrot",r:"medium",b:"Small insects on leaf undersides causing curling and yellowing. Transmit viral diseases.",a:"Spray neem oil (5ml/L) in evening. Use yellow sticky traps. Introduce ladybugs as natural predators."},
+  ],
+  seasons:[
+    {e:"🍅",n:"Tomato",m:"Oct – Mar",s:true},{e:"🧅",n:"Onion",m:"Nov – Apr",s:true},
+    {e:"🥔",n:"Potato",m:"Oct – Feb",s:true},{e:"🥬",n:"Leafy Greens",m:"Sep – Feb",s:true},
+    {e:"🥕",n:"Carrot",m:"Oct – Feb",s:true},{e:"🌽",n:"Corn",m:"Jun – Sep",s:false},
+    {e:"🍆",n:"Eggplant",m:"Mar – Jun",s:false},{e:"🌶️",n:"Chili",m:"Feb – Jun",s:false},
+  ],
+  tips:[
+    {e:"🌅",t:"Harvest at the Right Time",d:"Harvest early morning when cool. Reduces field heat and extends shelf life up to 40%. Avoid harvesting in rain."},
+    {e:"📦",t:"Pre-Cooling is Essential",d:"Remove field heat within 2 hours. Place in shade immediately. Pre-cooled produce lasts 2–3× longer."},
+    {e:"🧹",t:"Hygiene & Sorting",d:"Sort before storage — one rotten item spoils the batch. Clean crates between uses."},
+    {e:"💧",t:"Smart Irrigation",d:"Water deeply but less often. Irrigate early morning. Use mulch to reduce water use by 50%."},
+    {e:"🌿",t:"Organic Pest Control",d:"Neem oil for common pests. Companion planting — marigolds repel aphids naturally."},
+    {e:"🔄",t:"Crop Rotation",d:"Rotate every season. Follow heavy feeders with light feeders, then legumes to fix nitrogen."},
+  ],
+  footer:"KisanCool — Solar-Powered Smart Cold Storage · SDG 2, 7, 12, 13 · Hult Prize 2026",
+},
+ne:{
+  navTitle:"किसानकूल",tagline:"स्मार्ट कृषि कोल्ड स्टोरेज प्रणाली",connected:"जडान भयो",
+  temp:"तापक्रम",hum:"आर्द्रता",bat:"ब्याट्री",comp:"कम्प्रेसर",
+  normal:"सामान्य",good:"राम्रो",low:"कम",critical:"गम्भीर",high:"उच्च",
+  auto:"स्वचालित",on:"चालु",off:"बन्द",tgt:"लक्ष्य",solar:"सोलार",
+  chartTitle:"📈 तापक्रम र आर्द्रता",shelfTitle:"📦 अनुमानित भण्डारण अवधि",
+  ctrlTitle:"🎛️ नियन्त्रण",modeLabel:"सञ्चालन मोड",produceLabel:"भण्डारण गरिएको उत्पादन",
+  mtLabel:"तापक्रम सेटपोइन्ट (°C)",mhLabel:"आर्द्रता लक्ष्य (%)",
+  doorLabel:"ढोका सेन्सर",doorClosed:"बन्द",doorOpen:"खुला — कूलिंग रोकियो",
+  gridLabel:"ग्रिड बिजुली",gridOn:"उपलब्ध",gridOff:"अनुपलब्ध — अफ-ग्रिड",
+  alertTitle:"🔔 सूचनाहरू",noAlerts:"कुनै सूचना छैन। प्रणाली सामान्य छ।",
+  rem:"बाँकी",days:"दिन",
+  unitBadge:"युनिट #१ — सक्रिय",mktBadge:"आज अपडेट",disBadge:"२ सक्रिय सूचना",
+  secMonitor:"❄️ कोल्ड स्टोरेज अनुगमन",secWeather:"🌤️ मौसम र कृषि सल्लाह",
+  secMarket:"💰 बजार मूल्य",secGuide:"🌾 बाली ज्ञान केन्द्र",
+  secDisease:"🦠 रोग र कीरा सतर्कता",secSeason:"🗓️ मौसमी रोपाइ पात्रो",secTips:"💡 स्म��र्ट खेती सुझावहरू",
+  wxLabel:"हालको मौसम",fcTitle:"📅 ७ दिनको पूर्वानुमान",
+  thCrop:"बाली",thPrice:"मूल्य/के.जी.",thChange:"परिवर्तन",thAdvice:"सल्लाह",
+  TOMATO:"गोलभेडा",ONION:"प्याज",POTATO:"आलु",LEAFY_GREENS:"हरियो सागपात",CARROT:"गाजर",
+  wx:[
+    {s:"घाम लागेको · ३३°C",d:"वर्षा १०% · हावा ९ km/h · UV उच्च",tag:"गर्मी तनाव: मध्यम",tc:"warning",adv:"बिहान सबेरै बाली काट्नुहोस्। भण्डारण अघि चिसो गर्नुहोस्। साँझमा सिँचाइ ग��्नुहोस्।"},
+    {s:"आंशिक बादल · ३०°C",d:"वर्षा ३०% · हावा १२ km/h · UV मध्यम",tag:"खेतको काम: ठीक",tc:"ok",adv:"बाली काट्न र ढुवानीको लागि उत्तम। अहिले पर्णीय मल प्रयोग गर्नुहोस्।"},
+    {s:"गडगडाहट सम्भावित · २८°C",d:"वर्षा ७५% · हावा १८ km/h · UV कम",tag:"ढुसी जोखिम: उच्च",tc:"warning",adv:"स्प्रे नगर्नुहोस् — पानीले धोइदिन्छ। निकासी जाँच गर्नुहोस्। ब्लाइट हेर्नुहोस्।"},
+  ],
+  fc:[["सोम","☀️","३३°"],["मंगल","⛅","३१°"],["बुध","🌧️","२८°"],["बिहि","⛅","३०°"],["शुक्र","☀️","३२°"],["शनि","☀️","३४°"],["आइत","🌦️","२९°"]],
+  al:{
+    highTemp:{t:"उच्च तापक्रम",m:"भित्री तापक्रम सुरक्षित सीमा भन्दा बढी छ।"},
+    lowTemp:{t:"कम तापक्रम",m:"तापक्रम सुरक्षित सीमा भन्दा तल। चिसो क्षतिको जोखिम।"},
+    lowBat:{t:"कम ब्याट्री",m:"ब्याट्री गम्भीर रूपमा कम। इको मोड प्रयोग गर्नुहोस्।"},
+    doorOpen:{t:"ढोका खुला",m:"ढोका खुला छ। ऊर्जा बचत गर्न कूलिंग रोकियो।"},
+    modeChanged:{t:"मोड परिवर्तन",m:"सञ्चालन मोड अद्यावधिक गरियो।"},
+    produceChanged:{t:"उत्पादन अद्यावधिक",m:"बाली प्रोफाइल लागू गरियो।"},
+  },
+  shelf:{TOMATO:{n:"गोलभेडा",d:21},ONION:{n:"प्याज",d:60},POTATO:{n:"आलु",d:90},LEAFY_GREENS:{n:"हरियो सागपात",d:10},CARROT:{n:"गाजर",d:60}},
+  prices:[
+    {c:"🍅 गोलभेडा",p:"₹४५/के.जी.",ch:"+८%",tr:"up",a:"मूल्य बढ्दैछ — २-३ दिन भण्डारण गर्नुहोस्"},
+    {c:"🧅 प्याज",p:"₹३२/के.जी.",ch:"-३%",tr:"down",a:"थोरै गिरावट — ३० दिन भन्दा बढी भए बेच्नुहोस्"},
+    {c:"🥔 आलु",p:"₹२८/के.जी.",ch:"+२%",tr:"up",a:"स्थिर — भण्डारण गर्न राम्रो"},
+    {c:"🥬 सागपात",p:"₹५५/के.जी.",ch:"+१२%",tr:"up",a:"उच्च माग — अहिले बेच्नुहोस्"},
+    {c:"🥕 गाजर",p:"₹३८/के.जी.",ch:"०%",tr:"flat",a:"सपाट बजार — भण्डारण गर्नुहोस्"},
+  ],
+  guides:[
+    {e:"🍅",t:"गोलभेडा भण्डारण गाइड",d:"अधिकतम ताजगीको लागि उत्तम भण्डारण",l:["१०–१३°C मा भण्डारण (१०°C भन्दा तल चिसो क्षति)","ओइलाउन रोक्न ८५–९५% आर्द्रता","इथिलीन-संवेदनशील बालीसँग नराख्नुहोस्","क्षतिग्रस्त फल भण्डारण अघि हटाउनुहोस्","काटेको २ घण्टामा फिल्ड हीट हटाउनुहोस्"]},
+    {e:"🧅",t:"प्याज भण्डारण गाइड",d:"दीर्घकालीन गुणस्तर संरक्षण",l:["कोल्ड स्टोरेज अघि २-३ दिन सुकाउनुहोस्","२–८°C मा ६५–७५% आर्द्रतामा भण्डारण","राम्रो हा���ा चलाचल सुनिश्चित गर्नुहोस्","आलुसँग कहिल्यै नराख्नुहोस्","हप्ताको एक पटक जाँच गर्नुहोस्"]},
+    {e:"🥬",t:"हरियो सागपात गाइड",d:"छोटो शेल्फ लाइफ, नाजुक ह्यान्डलिंग",l:["तुरुन्तै १–५°C मा भण्डारण","ओइलाउन रोक्न ९०–९८% आर्द्रता","धोएर अतिरिक्त पानी हटाउनुहोस्","प्वालहरू भएका झोला प्रयोग गर्नुहोस्","७–१० दिन भित्र खपत गर्नुहोस्"]},
+  ],
+  diseases:[
+    {n:"ढिलो ब्लाइट",c:"गोलभेडा, आलु",r:"high",b:"पातमा गाढा पानी भिजेको धब्बा। आर्द्र अवस्थामा छिटो फैलिन्छ।",a:"तामा आधारित ढुसीनाशक प्र��ोग गर्नुहोस्। संक्रमित बिरुवा हटाउनुहोस्। दूरी बढाउनुहोस्।"},
+    {n:"बैजनी धब्बा",c:"प्याज",r:"medium",b:"पातमा बैजनी-खैरो घाउ। उच्च आर्द्रता र न्यानो तापक्रममा सामान्य।",a:"भिजेको समयमा म्यान्कोजेब प्रयोग गर्नुहोस्। निकासी सुनिश्चित गर्नुहोस्। बाली चक्र गर्नुहोस्।"},
+    {n:"माहुरो प्रकोप",c:"सागपात, गाजर",r:"medium",b:"पातको पछाडि साना कीरा। कुर्चाउने र पहेँलो पार्ने।",a:"साँझमा नीम तेल (५ml/L) छर्कनुहोस्। पहेँलो ट्र्यापहरू प्रयोग गर्नुहोस्।"},
+  ],
+  seasons:[
+    {e:"🍅",n:"गोलभेडा",m:"कार्तिक – चैत",s:true},{e:"🧅",n:"प्याज",m:"मंसिर – वैशाख",s:true},
+    {e:"🥔",n:"आलु",m:"कार्तिक – माघ",s:true},{e:"🥬",n:"सागपात",m:"भदौ – माघ",s:true},
+    {e:"🥕",n:"गाजर",m:"कार्तिक – माघ",s:true},{e:"🌽",n:"मकै",m:"असार – भदौ",s:false},
+    {e:"🍆",n:"भण्टा",m:"चैत – असार",s:false},{e:"🌶️",n:"खुर्सानी",m:"माघ – असार",s:false},
+  ],
+  tips:[
+    {e:"🌅",t:"सही समयमा बाली काट्नुहोस्",d:"बिहान सबेरै चिसो हुँदा काट्नुहोस्। शेल्फ लाइफ ४०% सम्म बढ्छ। पानीमा नकाट्नुहोस्।"},
+    {e:"📦",t:"प्रि-कूलिंग आवश्यक छ",d:"२ घण्टामा फिल्ड हीट हटाउनुहोस्। छायाँमा राख्नुहोस्। प्रि-कूल गरेको २–३× बढी टिक्छ।"},
+    {e:"🧹",t:"सरसफाइ र छानबिन",d:"भण्डारण अघि छान्नुहोस् — एउटा कुहिएकोले पूरै ब्याच बिगार्छ।"},
+    {e:"💧",t:"स्मार्ट सिँचाइ",d:"गहिरो तर कम पटक पानी। बिहान सिँचाइ। मल्चले ५०% पानी बचत।"},
+    {e:"🌿",t:"जैविक कीट नियन्त्रण",d:"नीम तेल प्रयोग गर्नुहोस्। साथी रोपाइ — सयपत्रीले माहुरो भगाउँछ।"},
+    {e:"🔄",t:"बाली चक्र",d:"हरेक मौसम बाली परिवर्तन गर्नुहोस्। भारी फिडर पछि हल्का फिडर, त्यसपछि दालहरू।"},
+  ],
+  footer:"किसानकूल — सोलार स्मार्ट कोल्ड स्टोरेज · SDG 2, 7, 12, 13 · Hult Prize 2026",
+}};
+
+let lang="en";
+function t(){return L[lang]}
+
+/* ────────── Crop profiles ────────── */
+const P={TOMATO:{tMin:10,tMax:13,hMin:85,hMax:95},ONION:{tMin:2,tMax:8,hMin:65,hMax:75},POTATO:{tMin:7,tMax:10,hMin:85,hMax:95},LEAFY_GREENS:{tMin:1,tMax:5,hMin:90,hMax:98},CARROT:{tMin:0,tMax:2,hMin:95,hMax:98}};
+
+/* ────────── State ────────── */
+const S={mode:"AUTO",produce:"TOMATO",doorOpen:false,grid:true,compOn:false,bat:84,solar:220,amb:33,temp:11.5,hum:88,alerts:[],pts:[],wxIdx:0};
+
+function tgts(){
+  const p=P[S.produce];
+  if(S.mode==="MANUAL"){const tv=+$("manualTemp").value,hv=+$("manualHum").value;return{tMin:tv-1,tMax:tv+1,hMin:hv-5,hMax:hv+5}}
+  if(S.mode==="ECO")return{tMin:p.tMin,tMax:p.tMax+1.5,hMin:p.hMin,hMax:p.hMax};
+  if(S.mode==="PRECOOL")return{tMin:p.tMin-1,tMax:p.tMin+.5,hMin:p.hMin,hMax:p.hMax};
+  return{...p};
+}
+
+/* ────────── Alerts ────────── */
+const aCD=new Map();
+function pushA(lv,key){
+  const now=Date.now();if(now-(aCD.get(key)||0)<20000)return;aCD.set(key,now);
+  const a=t().al[key];if(!a)return;
+  S.alerts.unshift({ts:new Date(),lv,key,ti:a.t,msg:a.m});
+  S.alerts=S.alerts.slice(0,5);renderAlerts();
+}
+function renderAlerts(){
+  const b=$("alertsBody");$("alertCount").textContent=String(S.alerts.length);
+  if(!S.alerts.length){b.innerHTML=`<div class="empty-note">${t().noAlerts}</div>`;return}
+  let h="";
+  for(const a of S.alerts){
+    const ai=t().al[a.key]||{t:a.ti,m:a.msg};
+    h+=`<div class="alert-item ${a.lv}"><div class="alert-icon">${a.lv==="ok"?"✓":a.lv==="warning"?"!":"×"}</div><div class="alert-text"><div class="ah">${ai.t} <span style="font-weight:400;color:var(--muted);font-size:13px">${a.ts.toLocaleTimeString()}</span></div><div class="ad">${ai.m}</div></div></div>`;
+  }
+  b.innerHTML=h;
+}
+
+/* ────────── Static sections ────────── */
+function renderPrices(){
+  let h="";for(const p of t().prices){
+    const cls=p.tr==="up"?"trend-up":p.tr==="down"?"trend-down":"trend-flat";
+    h+=`<tr><td>${p.c}</td><td>${p.p}</td><td class="${cls}">${p.ch}</td><td style="font-size:14px;color:var(--muted)">${p.a}</td></tr>`;
+  }
+  $("priceBody").innerHTML=h;
+}
+function renderGuides(){
+  let h="";for(const g of t().guides){
+    let li="";for(const i of g.l)li+=`<li>${i}</li>`;
+    h+=`<div class="info-card"><div class="ic-emoji">${g.e}</div><div class="ic-title">${g.t}</div><div class="ic-desc">${g.d}</div><ul class="ic-list">${li}</ul></div>`;
+  }
+  $("guideGrid").innerHTML=h;
+}
+function renderDiseases(){
+  let h="";for(const d of t().diseases){
+    h+=`<div class="disease-card"><div class="d-header"><div class="d-name">${d.n}</div><div class="d-risk ${d.r}">${d.r.toUpperCase()}</div></div><div class="d-crop">${d.c}</div><div class="d-body">${d.b}</div><div class="d-action">✅ ${d.a}</div></div>`;
+  }
+  $("diseaseGrid").innerHTML=h;
+}
+function renderSeasons(){
+  let h="";for(const s of t().seasons){
+    h+=`<div class="season-item ${s.s?"in-season":"off-season"}"><span class="s-emoji">${s.e}</span><div class="s-name">${s.n}</div><div class="s-months">${s.m}</div></div>`;
+  }
+  $("seasonGrid").innerHTML=h;
+}
+function renderTips(){
+  let h="";for(const tip of t().tips){
+    h+=`<div class="info-card"><div class="ic-emoji">${tip.e}</div><div class="ic-title">${tip.t}</div><div class="ic-desc">${tip.d}</div></div>`;
+  }
+  $("tipsGrid").innerHTML=h;
+}
+function renderForecast(){
+  let h="";for(const f of t().fc){
+    h+=`<div class="forecast-day"><div class="fd-icon">${f[1]}</div><div class="fd-temp">${f[2]}</div><div class="fd-label">${f[0]}</div></div>`;
+  }
+  $("fcBody").innerHTML=h;
+}
+function renderWeather(){
+  const w=t().wx[S.wxIdx];
+  $("wxSummary").textContent=w.s;$("wxDetail").textContent=w.d;
+  $("wxTag").textContent=w.tag;$("wxTag").className="tag "+w.tc;
+  $("wxAdvice").textContent=w.adv;
+}
+function renderShelf(){
+  const info=t().shelf[S.produce];const stored=3;const rem=info.d-stored;
+  const pct=clamp(rem/info.d*100,0,100);
+  const col=pct>50?"var(--good)":pct>20?"var(--warn)":"var(--bad)";
+  $("shelfBody").innerHTML=`<div class="shelf-item"><span class="shelf-name">${info.n}</span><span class="shelf-days">${rem} ${t().days} ${t().rem}</span><div class="shelf-bar"><div class="fill" style="width:${pct}%;background:${col}"></div></div></div>`;
+}
+
+/* ────────── Translate all ────────── */
+function applyLang(){
+  const l=t();
+  $("navTitle").textContent=l.navTitle;$("navTagline").textContent=l.tagline;
+  $("statusLabel").textContent=l.connected;
+  $("kpiTempLabel").textContent=l.temp;$("kpiHumLabel").textContent=l.hum;
+  $("kpiBatLabel").textContent=l.bat;$("kpiCompLabel").textContent=l.comp;
+  $("chartTitle").textContent=l.chartTitle;$("shelfTitle").textContent=l.shelfTitle;
+  $("ctrlTitle").textContent=l.ctrlTitle;$("modeLabel").textContent=l.modeLabel;
+  $("produceLabel").textContent=l.produceLabel;
+  $("mtLabel").textContent=l.mtLabel;$("mhLabel").textContent=l.mhLabel;
+  $("doorLabel").textContent=l.doorLabel;
+  $("doorDesc").textContent=S.doorOpen?l.doorOpen:l.doorClosed;
+  $("gridLabel").textContent=l.gridLabel;
+  $("gridDesc").textContent=S.grid?l.gridOn:l.gridOff;
+  $("alertTitle").textContent=l.alertTitle;
+  $("secMonitor").textContent=l.secMonitor;$("unitBadge").textContent=l.unitBadge;
+  $("secWeather").textContent=l.secWeather;$("wxLabel").textContent=l.wxLabel;
+  $("fcTitle").textContent=l.fcTitle;
+  $("secMarket").textContent=l.secMarket;$("mktBadge").textContent=l.mktBadge;
+  $("thCrop").textContent=l.thCrop;$("thPrice").textContent=l.thPrice;
+  $("thChange").textContent=l.thChange;$("thAdvice").textContent=l.thAdvice;
+  $("secGuide").textContent=l.secGuide;$("secDisease").textContent=l.secDisease;
+  $("disBadge").textContent=l.disBadge;$("secSeason").textContent=l.secSeason;
+  $("secTips").textContent=l.secTips;$("footerEl").textContent=l.footer;
+  // produce select options
+  [...$("produceSelect").options].forEach(o=>{o.textContent=l[o.value]||o.value});
+  document.querySelectorAll(".lang-toggle span").forEach(s=>s.classList.toggle("active",s.dataset.lang===lang));
+  renderAlerts();renderWeather();renderForecast();renderPrices();renderGuides();renderDiseases();renderSeasons();renderTips();renderShelf();
+}
+/* ────────── Chart ────────── */
+const canvas=$("chart"),ctx=canvas.getContext("2d");
+function resizeCanvas(){
+  const dpr=devicePixelRatio||1,r=canvas.getBoundingClientRect();
+  canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.height*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);drawChart();
+}
+window.addEventListener("resize",resizeCanvas);
+
+function drawChart(){
+  const w=canvas.getBoundingClientRect().width,h=canvas.getBoundingClientRect().height;
+  ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle="rgba(0,0,0,.06)";ctx.lineWidth=1;
+  for(let i=1;i<5;i++){const y=h/5*i;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  const pts=S.pts.slice(-60);
+  if(pts.length<2)return;
+  const tg=tgts();
+  const temps=pts.map(p=>p.t2),hums=pts.map(p=>p.h2);
+  const tL=Math.min(...temps,0),tH=Math.max(...temps,15);
+  const hL=50,hH=98;
+  const px=10,py=10;
+  const xAt=i=>px+(i/(pts.length-1))*(w-px*2);
+  const yT=v=>py+(1-(v-tL)/(tH-tL||1))*(h-py*2);
+  const yH=v=>py+(1-(v-hL)/(hH-hL||1))*(h-py*2);
+  // target band
+  ctx.fillStyle="rgba(37,99,235,.08)";
+  const y1=yT(tg.tMax),y2=yT(tg.tMin);
+  ctx.fillRect(0,Math.min(y1,y2),w,Math.abs(y2-y1));
+  // temp line
+  ctx.strokeStyle="#2563eb";ctx.lineWidth=2.5;ctx.lineJoin="round";ctx.beginPath();
+  pts.forEach((p,i)=>{const x=xAt(i),y=yT(p.t2);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();
+  // hum line
+  ctx.strokeStyle="#059669";ctx.lineWidth=2.5;ctx.beginPath();
+  pts.forEach((p,i)=>{const x=xAt(i),y=yH(p.h2);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();
+  // legend
+  ctx.font="bold 13px "+getComputedStyle(document.body).fontFamily;
+  ctx.fillStyle="#2563eb";ctx.fillText(lang==="ne"?"तापक्रम (°C)":"Temp (°C)",14,20);
+  ctx.fillStyle="#059669";ctx.fillText(lang==="ne"?"आर्द्रता (%)":"Humidity (%)",14,38);
+}
+
+/* ────────── Simulation step ────────── */
+function step(){
+  $("clockLabel").textContent=new Date().toLocaleTimeString();
+  const tg=tgts();
+  // compressor
+  if(S.doorOpen){S.compOn=false}
+  else{if(S.temp>tg.tMax+.6)S.compOn=true;if(S.temp<tg.tMin-.6)S.compOn=false}
+  // temp dynamics
+  let cool=S.compOn?-.18:.06;
+  if(S.mode==="ECO"&&S.compOn)cool*=.85;
+  if(S.mode==="PRECOOL"&&S.compOn)cool*=1.15;
+  if(S.doorOpen)cool=.22;
+  const drift=(S.amb-S.temp)*(S.doorOpen?.02:.008);
+  S.temp+=drift+cool+rnd(.05);
+  // humidity
+  const humT=(tg.hMin+tg.hMax)/2;
+  S.hum=clamp(S.hum+(humT-S.hum)*.05+rnd(.6)+(S.doorOpen?-.9:0),45,99);
+  // battery + solar
+  const solarOk=S.solar>120;
+  let bd=S.compOn?(solarOk?-.01:-.08):(solarOk?.02:-.01);
+  if(!S.grid&&!solarOk)bd-=.03;
+  S.bat=clamp(S.bat+bd+rnd(.02),0,100);
+  S.solar=clamp(S.solar+rnd(18),0,420);
+  const pw=solarOk?t().solar:(S.grid?"Grid":"Battery");
+  // alerts
+  if(S.temp>tg.tMax+2)pushA("danger","highTemp");
+  if(S.temp<tg.tMin-2)pushA("warning","lowTemp");
+  if(S.bat<20)pushA("warning","lowBat");
+  if(S.doorOpen)pushA("warning","doorOpen");
+  // chart point
+  S.pts.push({t2:S.temp,h2:S.hum});S.pts=S.pts.slice(-120);
+  // KPIs
+  $("kpiTemp").textContent=S.temp.toFixed(1)+"°C";
+  $("kpiTempSub").textContent=`${t().tgt}: ${tg.tMin}–${tg.tMax}°C`;
+  const tOk=S.temp>=tg.tMin-1.5&&S.temp<=tg.tMax+1.5;
+  $("kpiTempTag").textContent=tOk?t().normal:(S.temp>tg.tMax?t().high:t().low);
+  $("kpiTempTag").className="tag "+(tOk?"ok":(S.temp>tg.tMax+3?"danger":"warning"));
+
+  $("kpiHum").textContent=S.hum.toFixed(0)+"%";
+  $("kpiHumSub").textContent=`${t().tgt}: ${tg.hMin}–${tg.hMax}%`;
+  const hOk=S.hum>=tg.hMin-5&&S.hum<=tg.hMax+5;
+  $("kpiHumTag").textContent=hOk?t().normal:(S.hum<tg.hMin?t().low:t().high);
+  $("kpiHumTag").className="tag "+(hOk?"ok":"warning");
+
+  $("kpiBat").textContent=S.bat.toFixed(0)+"%";
+  $("kpiBatSub").textContent=`${t().solar}: ${Math.round(S.solar)}W · ${pw}`;
+  $("kpiBatTag").textContent=S.bat>30?t().good:(S.bat>15?t().low:t().critical);
+  $("kpiBatTag").className="tag "+(S.bat>30?"ok":(S.bat>15?"warning":"danger"));
+
+  $("kpiComp").textContent=S.compOn?t().on:t().off;
+  $("kpiCompSub").textContent=`${t().modeLabel}: ${S.mode}`;
+  $("kpiCompTag").textContent=S.mode==="AUTO"?t().auto:S.mode;
+  $("kpiCompTag").className="tag ok";
+
+  drawChart();
+}
+
+/* ────────── Events ────────── */
+$("langToggle").addEventListener("click",function(e){
+  const sp=e.target.closest("span[data-lang]");
+  if(!sp)return;
+  lang=sp.dataset.lang;
+  applyLang();
+});
+
+$("modeSelect").addEventListener("change",function(){
+  S.mode=this.value;
+  $("modeHint").textContent=S.mode;
+  $("manualTempField").style.display=S.mode==="MANUAL"?"block":"none";
+  $("manualHumField").style.display=S.mode==="MANUAL"?"block":"none";
+  pushA("ok","modeChanged");
+});
+
+$("produceSelect").addEventListener("change",function(){
+  S.produce=this.value;
+  const p=P[S.produce];
+  $("profileHint").textContent=p.tMin+"–"+p.tMax+"°C";
+  pushA("ok","produceChanged");
+  renderShelf();
+});
+
+$("manualTemp").addEventListener("input",function(){$("mtVal").textContent=Number(this.value).toFixed(1)});
+$("manualHum").addEventListener("input",function(){$("mhVal").textContent=this.value});
+
+function togSw(el,on){el.classList.toggle("on",on)}
+
+$("doorSw").addEventListener("click",function(){
+  S.doorOpen=!S.doorOpen;
+  togSw(this,S.doorOpen);
+  $("doorDesc").textContent=S.doorOpen?t().doorOpen:t().doorClosed;
+  if(S.doorOpen)pushA("warning","doorOpen");
+});
+
+$("gridSw").addEventListener("click",function(){
+  S.grid=!S.grid;
+  togSw(this,S.grid);
+  $("gridDesc").textContent=S.grid?t().gridOn:t().gridOff;
+});
+
+/* ────────── Init ────────── */
+function init(){
+  $("profileHint").textContent=P[S.produce].tMin+"–"+P[S.produce].tMax+"°C";
+  // seed chart
+  for(let i=0;i<25;i++){
+    S.pts.push({t2:S.temp+rnd(.3),h2:S.hum+rnd(1.5)});
+  }
+  applyLang();
+  resizeCanvas();
+  // weather rotation
+  setInterval(function(){S.wxIdx=(S.wxIdx+1)%t().wx.length;renderWeather()},15000);
+  // main loop
+  setInterval(step,1000);
+  step();
+}
+init();
+</script>
+</body>
+</html>
